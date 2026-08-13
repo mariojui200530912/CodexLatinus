@@ -1,12 +1,13 @@
 package ast.stm;
 
 import ast.NodoAST;
+import ast.exp.NodoExpresion;
 
-public class NodoDeclaracionArreglo extends NodoAST {
+public class NodoDeclaracionArreglo extends NodoInstruccion {
     public String id;
     public int tamano;
     public String tipoDato;
-    public NodoAST[] valoresIniciales; // Arreglo simple para los valores {exp, exp...}
+    public NodoExpresion[] valoresIniciales; // Arreglo simple para los valores {exp, exp...}
     public int cantValores = 0;
 
     public NodoDeclaracionArreglo(String id, int tamano, String tipoDato, int capValores) {
@@ -14,11 +15,11 @@ public class NodoDeclaracionArreglo extends NodoAST {
         this.tamano = tamano;
         this.tipoDato = tipoDato;
         if (capValores > 0) {
-            this.valoresIniciales = new NodoAST[capValores];
+            this.valoresIniciales = new NodoExpresion[capValores];
         }
     }
 
-    public void agregarValorInicial(NodoAST valor) {
+    public void agregarValorInicial(NodoExpresion valor) {
         if (valoresIniciales != null && cantValores < valoresIniciales.length) {
             valoresIniciales[cantValores++] = valor;
         }

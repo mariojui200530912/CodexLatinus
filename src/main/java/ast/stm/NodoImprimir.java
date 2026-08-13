@@ -1,13 +1,14 @@
 package ast.stm;
 
 import ast.NodoAST;
+import ast.exp.NodoExpresion;
 
 public class NodoImprimir extends NodoAST {
-    public NodoAST[] expresiones;
+    public NodoExpresion[] expresiones;
     public int contador = 0;
 
     public NodoImprimir(int capacidad) {
-        this.expresiones = new NodoAST[capacidad];
+        this.expresiones = new NodoExpresion[capacidad];
     }
     @Override public void traducirPigLatin() {}
 }

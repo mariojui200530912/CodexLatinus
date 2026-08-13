@@ -2,12 +2,12 @@ package ast.exp;
 
 import ast.NodoAST;
 
-public class NodoOperacionBinaria extends NodoAST {
-    public NodoAST hijoIzquierdo;
+public class NodoOperacionBinaria extends NodoExpresion {
+    public NodoExpresion hijoIzquierdo;
     public String operador;
-    public NodoAST hijoDerecho;
+    public NodoExpresion hijoDerecho;
 
-    public NodoOperacionBinaria(NodoAST izq, String op, NodoAST der) {
+    public NodoOperacionBinaria(NodoExpresion izq, String op, NodoExpresion der) {
         this.hijoIzquierdo = izq;
         this.operador = op;
         this.hijoDerecho = der;

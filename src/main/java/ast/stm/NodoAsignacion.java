@@ -1,13 +1,14 @@
 package ast.stm;
 
 import ast.NodoAST;
+import ast.exp.NodoExpresion;
 
-public class NodoAsignacion extends NodoAST {
+public class NodoAsignacion extends NodoInstruccion {
     public String id;
-    public NodoAST expresionIndice; // Null si es variable simple, instanciado si es arreglo
-    public NodoAST expresionValor;
+    public NodoExpresion expresionIndice; // Null si es variable simple, instanciado si es arreglo
+    public NodoExpresion expresionValor;
 
-    public NodoAsignacion(String id, NodoAST expresionIndice, NodoAST expresionValor) {
+    public NodoAsignacion(String id, NodoExpresion expresionIndice, NodoExpresion expresionValor) {
         this.id = id;
         this.expresionIndice = expresionIndice;
         this.expresionValor = expresionValor;

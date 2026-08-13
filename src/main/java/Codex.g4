@@ -6,9 +6,9 @@ program : seccionVariables? seccionFunciones? seccionPrincipal EOF ;
 
 seccionVariables : VARIABILES MAYOR declaracion* ;
 seccionFunciones : MUNERA MAYOR funcion* ;
-seccionPrincipal : MAIOR MAYOR instruccion* FINIS PUNTO_COMA ;
+seccionPrincipal : MAIOR MAYOR instruccion* FINIS_MAIOR PUNTO_COMA? ;
 
-tipoDato : NUMERUS | TEXTUM | DECIMALIS | LITTERA | VERUM | FALSUS | ID ;
+tipoDato : NUMERUS | TEXTUM | DECIMALIS | LITTERA | BOOL | ID ;
 
 declaracion : declaracionVar
             | declaracionArreglo
@@ -18,7 +18,7 @@ declaracionVar : ESTO ID DOS_PUNTOS tipoDato ( expresion )? PUNTO_COMA ;
 
 declaracionArreglo : SERIES ID CORCHETE_IZQ ENTERO CORCHETE_DER DOS_PUNTOS tipoDato ( LLAVE_IZQ expresion (COMA expresion)* LLAVE_DER )? PUNTO_COMA ;
 
-definicionStruct : STRUCTURA ID LLAVE_IZQ (ESTO ID DOS_PUNTOS tipoDato PUNTO_COMA | ID DOS_PUNTOS tipoDato COMA?)* LLAVE_DER FINIS PUNTO_COMA ;
+definicionStruct : STRUCTURA ID LLAVE_IZQ (ESTO ID DOS_PUNTOS tipoDato PUNTO_COMA?)* LLAVE_DER FINIS PUNTO_COMA ;
 
 funcion : (ACTIO | RATIO tipoDato) ID PAREN_IZQ parametros? PAREN_DER LLAVE_IZQ seccionVariablesLocal? instruccion* (REDDERE expresion PUNTO_COMA)? LLAVE_DER FINIS PUNTO_COMA ;
 
@@ -32,8 +32,9 @@ instruccion : declaracionVar
             | estructuraControl
             | funcionEspecial
             | llamadaFuncion PUNTO_COMA
-            | PERGE PUNTO_COMA
-            | INTERRUMPE PUNTO_COMA ;
+            | interrupcion ;
+
+interrupcion : ( PERGE | INTERRUMPE ) PUNTO_COMA ;
 
 asignacion : ID (CORCHETE_IZQ expresion CORCHETE_DER)? ASIGNACION expresion PUNTO_COMA ;
 
@@ -52,8 +53,8 @@ cicloFacere : FACERE LLAVE_IZQ instruccion* LLAVE_DER DUM PAREN_IZQ expresion PA
 
 cicloPer : PER PAREN_IZQ declaracionVar expresion PUNTO_COMA ID (MAS_MAS | MENOS_MENOS) PAREN_DER LLAVE_IZQ instruccion* LLAVE_DER ;
 
-funcionEspecial : LEER ID PUNTO_COMA
-                | IMPRIMIR expresion (IMPRIMIR expresion)* PUNTO_COMA ;
+funcionEspecial : ID? LEER PUNTO_COMA?
+                | IMPRIMIR expresion (IMPRIMIR expresion)* PUNTO_COMA? ;
 
 expresion : MENOS expresion                               # exprUnaria
           | NON expresion                                 # exprNegacion
@@ -74,6 +75,7 @@ expresion : MENOS expresion                               # exprUnaria
           | ID PUNTO ID                                   # exprAtributoStruct
           | llamadaFuncion                                # exprLlamada
           | ID                                            # exprVariable
+          | ID? LLAVE_IZQ ( ID DOS_PUNTOS expresion COMA? )* LLAVE_DER #exprInstanciaStruct
           ;
 
 llamadaFuncion : ID PAREN_IZQ (expresion (COMA expresion)*)? PAREN_DER ;
@@ -86,6 +88,7 @@ NUMERUS    : 'numerus';
 TEXTUM     : 'textum';
 DECIMALIS  : 'decimalis';
 LITTERA    : 'littera';
+BOOL       : 'bool';
 VERUM      : 'verum';
 FALSUS     : 'falsus';
 
@@ -93,7 +96,8 @@ FALSUS     : 'falsus';
 ESTO       : 'esto';
 SERIES     : 'series';
 STRUCTURA  : 'structura';
-FINIS      : 'finis' | 'FINIS';
+FINIS      : 'finis';
+FINIS_MAIOR : 'FINIS';
 
 // Estructuras de Control de Flujo
 SI         : 'si';

@@ -2,7 +2,7 @@ package ast.exp;
 
 import ast.NodoAST;
 
-public class NodoLiteral extends NodoAST {
+public class NodoLiteral extends NodoExpresion {
     public Object valor;
     public String tipoDato;
     public NodoLiteral(Object valor, String tipoDato) {

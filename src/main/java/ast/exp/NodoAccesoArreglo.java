@@ -2,11 +2,11 @@ package ast.exp;
 
 import ast.NodoAST;
 
-public class NodoAccesoArreglo extends NodoAST {
+public class NodoAccesoArreglo extends NodoExpresion {
     public String idArreglo;
-    public NodoAST expresionIndice;
+    public NodoExpresion expresionIndice;
 
-    public NodoAccesoArreglo(String idArreglo, NodoAST expresionIndice) {
+    public NodoAccesoArreglo(String idArreglo, NodoExpresion expresionIndice) {
         this.idArreglo = idArreglo;
         this.expresionIndice = expresionIndice;
     }

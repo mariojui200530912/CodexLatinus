@@ -2,7 +2,7 @@ package ast.stm;
 
 import ast.NodoAST;
 
-public class NodoDefinicionStruct extends NodoAST {
+public class NodoDefinicionStruct extends NodoInstruccion {
     public String id;
     public String[] nombresAtributos;
     public String[] tiposAtributos;

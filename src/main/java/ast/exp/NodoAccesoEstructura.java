@@ -2,7 +2,7 @@ package ast.exp;
 
 import ast.NodoAST;
 
-public class NodoAccesoEstructura extends NodoAST {
+public class NodoAccesoEstructura extends NodoExpresion {
     public String idEstructura;
     public String idAtributo;
 

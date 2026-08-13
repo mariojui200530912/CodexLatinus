@@ -148,6 +148,16 @@ public interface CodexListener extends ParseTreeListener {
 	 */
 	void exitInstruccion(CodexParser.InstruccionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CodexParser#interrupcion}.
+	 * @param ctx the parse tree
+	 */
+	void enterInterrupcion(CodexParser.InterrupcionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CodexParser#interrupcion}.
+	 * @param ctx the parse tree
+	 */
+	void exitInterrupcion(CodexParser.InterrupcionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CodexParser#asignacion}.
 	 * @param ctx the parse tree
 	 */
@@ -289,6 +299,18 @@ public interface CodexListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExprFalso(CodexParser.ExprFalsoContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code exprInstanciaStruct}
+	 * labeled alternative in {@link CodexParser#expresion}.
+	 * @param ctx the parse tree
+	 */
+	void enterExprInstanciaStruct(CodexParser.ExprInstanciaStructContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code exprInstanciaStruct}
+	 * labeled alternative in {@link CodexParser#expresion}.
+	 * @param ctx the parse tree
+	 */
+	void exitExprInstanciaStruct(CodexParser.ExprInstanciaStructContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code exprLlamada}
 	 * labeled alternative in {@link CodexParser#expresion}.

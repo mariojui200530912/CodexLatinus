@@ -1,20 +1,18 @@
-package ast.stm;
+package ast.exp;
 
-import ast.NodoAST;
-
-public class NodoLlamadaFuncion extends NodoAST {
+public class NodoLlamadaFuncion extends NodoExpresion {
     public String id;
-    public NodoAST[] argumentos;
+    public NodoExpresion[] argumentos;
     public int cantArgumentos = 0;
 
     public NodoLlamadaFuncion(String id, int capacidadArgumentos) {
         this.id = id;
         if (capacidadArgumentos > 0) {
-            this.argumentos = new NodoAST[capacidadArgumentos];
+            this.argumentos = new NodoExpresion[capacidadArgumentos];
         }
     }
 
-    public void agregarArgumento(NodoAST arg) {
+    public void agregarArgumento(NodoExpresion arg) {
         if (argumentos != null && cantArgumentos < argumentos.length) {
             argumentos[cantArgumentos++] = arg;
         }

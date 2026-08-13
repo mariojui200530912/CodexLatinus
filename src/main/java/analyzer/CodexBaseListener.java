@@ -185,6 +185,18 @@ public class CodexBaseListener implements CodexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterInterrupcion(CodexParser.InterrupcionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInterrupcion(CodexParser.InterrupcionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAsignacion(CodexParser.AsignacionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -336,6 +348,18 @@ public class CodexBaseListener implements CodexListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExprFalso(CodexParser.ExprFalsoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExprInstanciaStruct(CodexParser.ExprInstanciaStructContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExprInstanciaStruct(CodexParser.ExprInstanciaStructContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

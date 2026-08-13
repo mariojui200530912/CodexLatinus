@@ -116,6 +116,13 @@ public class CodexBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitInterrupcion(CodexParser.InterrupcionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitAsignacion(CodexParser.AsignacionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -201,6 +208,13 @@ public class CodexBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitExprFalso(CodexParser.ExprFalsoContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitExprInstanciaStruct(CodexParser.ExprInstanciaStructContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

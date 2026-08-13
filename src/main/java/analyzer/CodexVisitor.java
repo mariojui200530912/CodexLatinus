@@ -95,6 +95,12 @@ public interface CodexVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInstruccion(CodexParser.InstruccionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CodexParser#interrupcion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInterrupcion(CodexParser.InterrupcionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CodexParser#asignacion}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -178,6 +184,13 @@ public interface CodexVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExprFalso(CodexParser.ExprFalsoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code exprInstanciaStruct}
+	 * labeled alternative in {@link CodexParser#expresion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExprInstanciaStruct(CodexParser.ExprInstanciaStructContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code exprLlamada}
 	 * labeled alternative in {@link CodexParser#expresion}.
