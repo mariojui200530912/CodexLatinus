@@ -1,8 +1,10 @@
 package ast.exp;
 
 import ast.NodoAST;
+import errores.GestorErrores;
 import simbolos.Simbolo;
 import simbolos.TablaSimbolos;
+import traductor.TraductorPigLatin;
 
 public class NodoIdentificador extends NodoExpresion {
     public String id;
@@ -12,16 +14,19 @@ public class NodoIdentificador extends NodoExpresion {
     }
 
     @Override
-    public void validarSemantica(TablaSimbolos entornoActual) {
+    public void validarSemantica(TablaSimbolos entornoActual, GestorErrores gestorErrores) {
         Simbolo sim = entornoActual.buscar(this.id);
 
         if (sim == null) {
-            System.err.println("Error Semántico: La variable '" + this.id + "' no ha sido declarada. [Linea: " + this.linea + "]");
+            gestorErrores.agregarError("Semantico", "Error Semántico: La variable '" + this.id + "' no ha sido declarada. [Linea: " + this.linea + "]", this.linea, this.columna);
             this.tipoInferido = "error";
         } else {
             this.tipoInferido = sim.tipo;
         }
     }
 
-    @Override public void traducirPigLatin() {}
+    @Override
+    public String traducirPigLatin() {
+        return TraductorPigLatin.traducirPalabra(this.id);
+    }
 }

@@ -2,6 +2,9 @@ package ast.stm;
 
 import ast.NodoAST;
 import ast.exp.NodoExpresion;
+import errores.GestorErrores;
+import simbolos.TablaSimbolos;
+import traductor.TraductorPigLatin;
 
 public class NodoInstanciaEstructura extends NodoInstruccion {
     public String tipoEstructura;
@@ -22,5 +25,25 @@ public class NodoInstanciaEstructura extends NodoInstruccion {
             cantAtributos++;
         }
     }
-    @Override public void traducirPigLatin() {}
+
+    @Override
+    public void validarSemantica(TablaSimbolos entornoActual, GestorErrores gestorErrores) {
+        for (int i = 0; i < cantAtributos; i++) {
+            expresionesAtributos[i].validarSemantica(entornoActual, gestorErrores);
+        }
+    }
+
+    @Override
+    public String traducirPigLatin() {
+        String codigo = "";
+        if (tipoEstructura != null) {
+            codigo += TraductorPigLatin.traducirPalabra(tipoEstructura) + " ";
+        }
+        codigo += "{ ";
+        for (int i = 0; i < cantAtributos; i++) {
+            codigo += TraductorPigLatin.traducirPalabra(nombresAtributos[i]) + " : " + expresionesAtributos[i].traducirPigLatin();
+            if (i < cantAtributos - 1) codigo += ", ";
+        }
+        return codigo + " }";
+    }
 }

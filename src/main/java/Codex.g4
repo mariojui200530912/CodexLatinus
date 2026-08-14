@@ -160,6 +160,6 @@ CADENA     : '"' .*? '"';
 CARACTER   : '\'' . '\'';
 
 // Reglas de Ignorado (Espacios y Comentarios)
-COMMENT       : '//' ~[\r\n]* -> skip;
-BLOCK_COMMENT : '##' .*? '##' -> skip;
+COMMENT       : '//' ~[\r\n]* -> channel(HIDDEN);
+BLOCK_COMMENT : '##' .*? '##' -> channel(HIDDEN);
 WS            : [ \t\r\n]+ -> skip;
