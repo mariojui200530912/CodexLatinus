@@ -48,19 +48,18 @@ public class VentanaPila extends JFrame {
         panelControl.add(btnSiguiente);
         add(panelControl, BorderLayout.NORTH);
 
-        // --- PANEL IZQUIERDO (Visualización de la Pila) ---
+        // PANEL IZQUIERDO (Pila)
         modeloPila = new DefaultListModel<>();
         JList<String> listaPila = new JList<>(modeloPila);
         listaPila.setBackground(new Color(230, 235, 240));
 
-        // Renderizador personalizado para dibujar "Bloques" separados
         listaPila.setCellRenderer(new PilaCellRenderer());
 
         JPanel panelPila = new JPanel(new BorderLayout());
         panelPila.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Tope de la Pila", 0, 0, new Font("SansSerif", Font.BOLD, 12)));
         panelPila.add(new JScrollPane(listaPila), BorderLayout.CENTER);
 
-        // --- PANEL DERECHO (Log de operaciones a color) ---
+        // PANEL DERECHO
         areaLog = new JTextPane();
         areaLog.setEditable(false);
         areaLog.setBackground(new Color(30, 30, 30));
@@ -73,13 +72,11 @@ public class VentanaPila extends JFrame {
         scrollLog.setPreferredSize(new Dimension(350, 0));
         panelLog.add(scrollLog, BorderLayout.CENTER);
 
-        // Dividimos la pantalla
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelPila, panelLog);
         split.setResizeWeight(0.4);
         split.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(split, BorderLayout.CENTER);
 
-        // Lógica de botones
         btnAtras.addActionListener(e -> {
             if (indiceActual > 0) {
                 indiceActual--;
@@ -100,13 +97,11 @@ public class VentanaPila extends JFrame {
     private void actualizarVista() {
         EstadoPila estado = historial.get(indiceActual);
 
-        // 1. Actualizar la Pila Visual
         modeloPila.clear();
         for (int i = estado.elementosPila.size() - 1; i >= 0; i--) {
             modeloPila.addElement(estado.elementosPila.get(i));
         }
 
-        // 2. Actualizar el Log de Texto con colores y separadores
         areaLog.setText("");
         StyledDocument doc = areaLog.getStyledDocument();
         try {
@@ -116,35 +111,29 @@ public class VentanaPila extends JFrame {
                 String linea = lineaOriginal + "\n";
                 Style estiloAsignado = estiloNormal;
 
-                // INYECCIÓN DEL SEPARADOR:
-                // Si la acción anterior fue un 'reduce' y la nueva no lo es, dibujamos la línea
                 if (ultimaAccion.contains("reduce") && (lineaOriginal.contains("shift") || lineaOriginal.contains("goto"))) {
                     doc.insertString(doc.getLength(), "------------------------\n", estiloNormal);
                 }
 
-                // Asignación de colores
                 if (linea.contains("shift")) estiloAsignado = estiloShift;
                 else if (linea.contains("reduce")) estiloAsignado = estiloReduce;
                 else if (linea.contains("goto") || linea.contains("ENTER")) estiloAsignado = estiloGoto;
                 else if (linea.contains("accept")) estiloAsignado = estiloAccept;
 
                 doc.insertString(doc.getLength(), linea, estiloAsignado);
-                ultimaAccion = lineaOriginal; // Guardamos registro para la siguiente iteración
+                ultimaAccion = lineaOriginal;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        // Auto-scroll al final del log
         areaLog.setCaretPosition(doc.getLength());
 
-        // 3. Actualizar controles
         lblPaso.setText("Paso: " + (indiceActual + 1) + " / " + historial.size());
         btnAtras.setEnabled(indiceActual > 0);
         btnSiguiente.setEnabled(indiceActual < historial.size() - 1);
     }
 
-    // --- MÉTODOS DE DISEÑO Y UTILIDAD ---
 
     private void formatearBoton(JButton btn) {
         btn.setFont(new Font("SansSerif", Font.BOLD, 13));
@@ -178,14 +167,13 @@ public class VentanaPila extends JFrame {
         StyleConstants.setBold(estiloAccept, true);
     }
 
-    // --- RENDERIZADOR PARA LOS BLOQUES DE LA PILA ---
     private class PilaCellRenderer implements ListCellRenderer<String> {
         private JPanel panelBase;
         private JLabel lblTexto;
 
         public PilaCellRenderer() {
             panelBase = new JPanel(new BorderLayout());
-            panelBase.setBorder(BorderFactory.createEmptyBorder(4, 15, 4, 15)); // Espaciado exterior entre bloques
+            panelBase.setBorder(BorderFactory.createEmptyBorder(4, 15, 4, 15));
             panelBase.setOpaque(false); // Fondo transparente para ver el fondo del JList
 
             lblTexto = new JLabel();
@@ -199,13 +187,12 @@ public class VentanaPila extends JFrame {
         public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean isSelected, boolean cellHasFocus) {
             lblTexto.setText(value);
 
-            // Si es el tope de la pila (índice 0), lo destacamos
             if (index == 0) {
-                lblTexto.setBackground(new Color(255, 87, 34)); // Naranja "Resistencia"
+                lblTexto.setBackground(new Color(255, 87, 34)); // Naranja
                 lblTexto.setForeground(Color.WHITE);
                 lblTexto.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(new Color(191, 54, 12), 2),
-                        BorderFactory.createEmptyBorder(8, 5, 8, 5) // Espaciado interior (padding)
+                        BorderFactory.createEmptyBorder(8, 5, 8, 5)
                 ));
             } else {
                 // Bloques inactivos debajo del tope

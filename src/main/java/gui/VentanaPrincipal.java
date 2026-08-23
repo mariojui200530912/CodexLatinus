@@ -38,12 +38,15 @@ public class VentanaPrincipal extends JFrame {
         JMenuBar menuBar = new JMenuBar();
 
         JMenu menuArchivo = new JMenu("Archivo");
+        JMenuItem itemNuevo = new JMenuItem("Nuevo");
         JMenuItem itemAbrir = new JMenuItem("Abrir .lat");
         JMenuItem itemGuardar = new JMenuItem("Guardar");
 
+        itemNuevo.addActionListener(e -> limpiarEntorno());
         itemAbrir.addActionListener(e -> abrirArchivo());
         itemGuardar.addActionListener(e -> guardarArchivo());
 
+        menuArchivo.add(itemNuevo);
         menuArchivo.add(itemAbrir);
         menuArchivo.add(itemGuardar);
         menuBar.add(menuArchivo);
@@ -123,7 +126,7 @@ public class VentanaPrincipal extends JFrame {
             NodoPrograma programaAST = (NodoPrograma) constructor.visit(arbolCST);
 
             // Validacion semantica
-            TablaSimbolos tablaGlobal = new TablaSimbolos(500, null, "Global");
+            TablaSimbolos tablaGlobal = new TablaSimbolos(5000, null, "Global");
             programaAST.validarSemantica(tablaGlobal, gestorErrores);
 
             if (gestorErrores.hayErrores()) {
@@ -195,6 +198,27 @@ public class VentanaPrincipal extends JFrame {
 
             } catch (Exception ex) {
                 editor.imprimirEnConsola("Error al guardar el archivo: " + ex.getMessage());
+            }
+        }
+    }
+
+    private void limpiarEntorno() {
+        int confirmacion = JOptionPane.showConfirmDialog(
+                this,
+                "¿Estás seguro de crear un nuevo archivo? Se perderá el código no guardado.",
+                "Nuevo Archivo",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            editor.limpiarEditor();
+            editor.limpiarConsola();
+
+            for (java.awt.Window ventana : java.awt.Window.getWindows()) {
+                if (ventana instanceof VentanaResultados || ventana instanceof VentanaPila) {
+                    ventana.dispose();
+                }
             }
         }
     }

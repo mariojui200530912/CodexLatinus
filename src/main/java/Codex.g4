@@ -116,10 +116,10 @@ VARIABILES : 'VARIABILES';
 MUNERA     : 'MUNERA';
 MAIOR      : 'MAIOR';
 
-// Operadores Lógicos (Palabras)
+// Operadores Logicos
 NON        : 'non';
 
-// Funciones Especiales del Sistema (I/O)
+// Funciones Especiales del Sistema
 LEER       : '<<';
 IMPRIMIR   : '>>';
 

@@ -77,6 +77,10 @@ public class Editor {
         areaConsola.setText("");
     }
 
+    public void limpiarEditor() {
+        areaCodigo.setText("");
+    }
+
     public String getTexto() {
         try {
             return areaCodigo.getDocument().getText(0, areaCodigo.getDocument().getLength());

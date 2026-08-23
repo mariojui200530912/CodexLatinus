@@ -15,7 +15,7 @@ public class TablaSimbolos {
         this.padre = padre;
         this.nombreEntorno = nombreEntorno;
 
-        this.hijos = new TablaSimbolos[100];
+        this.hijos = new TablaSimbolos[2000];
         this.cantidadHijos = 0;
 
         if (this.padre != null) {

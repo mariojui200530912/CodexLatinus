@@ -41,9 +41,9 @@ public class RastreadorPila implements ParseTreeListener {
     public void visitTerminal(TerminalNode node) {
         String token = node.getText();
         if (token.equals("<EOF>")) {
-            historialEstados.add(new EstadoPila(pilaActual, "accept --"));
+            historialEstados.add(new EstadoPila(pilaActual, "accept -- "));
         } else {
-            historialEstados.add(new EstadoPila(pilaActual, "shift -->" + token));
+            historialEstados.add(new EstadoPila(pilaActual, "shift --> " + token));
         }
     }
 

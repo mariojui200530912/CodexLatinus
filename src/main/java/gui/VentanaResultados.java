@@ -31,12 +31,15 @@ public class VentanaResultados extends JFrame {
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // --- PANEL DE BOTONES SUPERIOR ---
+        // PANEL DE BOTONES SUPERIOR
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        panelBotones.setBackground(new Color(40, 44, 52));
         JButton btnPigLatin = new JButton("Traducir a PigLatin");
         JButton btnPilaLlamadas = new JButton("Ver Pila de Llamadas");
 
-        // 1. Acción del botón de la Pila
+        formatearBoton(btnPigLatin);
+        formatearBoton(btnPilaLlamadas);
+
         btnPilaLlamadas.addActionListener(e -> {
             if (this.historialPila != null && !this.historialPila.isEmpty()) {
                 new VentanaPila(this.historialPila).setVisible(true);
@@ -45,14 +48,13 @@ public class VentanaResultados extends JFrame {
             }
         });
 
-        // 2. Acción del botón Pig Latin
         btnPigLatin.addActionListener(e -> mostrarVentanaTraduccion());
 
         panelBotones.add(btnPilaLlamadas);
         panelBotones.add(btnPigLatin);
         add(panelBotones, BorderLayout.NORTH);
 
-        // --- CONFIGURACIÓN DEL LIENZO JGRAPHX ---
+        // CONFIGURACION DE JGRAPHX -
         mxGraph grafoAST = new mxGraph();
         grafoAST.setCellsEditable(false);
         grafoAST.setCellsDisconnectable(false);
@@ -62,17 +64,15 @@ public class VentanaResultados extends JFrame {
         componenteGraficaAST.getViewport().setOpaque(true);
         componenteGraficaAST.getViewport().setBackground(Color.WHITE);
 
-        // --- SISTEMA DE PESTAÑAS ---
         JTabbedPane panelPestanas = new JTabbedPane();
         panelPestanas.addTab("Árbol de Sintaxis Abstracta (AST)", componenteGraficaAST);
 
-        // Inyectar la Tabla de Símbolos
+        // Inyectar la Tabla de Simbolos
         JScrollPane scrollTablaSimbolos = construirVistaTablaSimbolos(this.tablaSimbolos);
         panelPestanas.addTab("Tabla de Símbolos", scrollTablaSimbolos);
 
         add(panelPestanas, BorderLayout.CENTER);
 
-        // Dibujar el árbol sintáctico
         dibujarAST();
     }
 
@@ -83,9 +83,7 @@ public class VentanaResultados extends JFrame {
         graficador.graficar(this.raizAST, graph);
     }
 
-    // =========================================================================
-    // MÉTODOS PARA LA TABLA DE SÍMBOLOS
-    // =========================================================================
+    // METODOS PARA LA TABLA DE SIMBOLOS
 
     private JScrollPane construirVistaTablaSimbolos(TablaSimbolos entornoGlobal) {
         String[] columnas = {"ID (Nombre)", "Categoría", "Tipo de Dato", "Entorno"};
@@ -127,9 +125,7 @@ public class VentanaResultados extends JFrame {
         }
     }
 
-    // =========================================================================
-    // MÉTODOS PARA EL TRADUCTOR PIG LATIN
-    // =========================================================================
+    // METODOS PARA EL TRADUCTOR PIG LATIN
 
     private void mostrarVentanaTraduccion() {
         if (this.raizAST == null) return;
@@ -151,10 +147,11 @@ public class VentanaResultados extends JFrame {
         dialogoPig.add(new JScrollPane(areaTexto), BorderLayout.CENTER);
 
         JButton btnGuardarPig = new JButton("Guardar archivo .pig");
-        btnGuardarPig.setFont(new Font("SansSerif", Font.BOLD, 13));
+        formatearBoton(btnGuardarPig);
         btnGuardarPig.addActionListener(e -> guardarArchivoPig(codigoTraducido));
 
         JPanel panelSur = new JPanel();
+        panelSur.setBackground(new Color(40, 44, 52));
         panelSur.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         panelSur.add(btnGuardarPig);
         dialogoPig.add(panelSur, BorderLayout.SOUTH);
@@ -181,5 +178,15 @@ public class VentanaResultados extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error al guardar el archivo: " + ex.getMessage(), "Error Fatal", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    private void formatearBoton(JButton btn) {
+        btn.setFont(new Font("SansSerif", Font.BOLD, 13));
+        btn.setBackground(new Color(70, 75, 85));
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setOpaque(true);
+        btn.setBorderPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 }
