@@ -1,6 +1,5 @@
 package ast.exp;
 
-import ast.NodoAST;
 import errores.GestorErrores;
 import simbolos.TablaSimbolos;
 import simbolos.ValidadorTipos;
@@ -34,6 +33,7 @@ public class NodoOperacionBinaria extends NodoExpresion {
             this.tipoInferido = ValidadorTipos.inferirTipoRelacional(hijoIzquierdo.tipoInferido, hijoDerecho.tipoInferido, operador, gestorErrores, this.linea, this.columna);
         }
     }
+
     @Override
     public String traducirPigLatin() {
         return hijoIzquierdo.traducirPigLatin() + " " + operador + " " + hijoDerecho.traducirPigLatin();

@@ -18,7 +18,7 @@ declaracionVar : ESTO ID DOS_PUNTOS tipoDato ( expresion )? PUNTO_COMA ;
 
 declaracionArreglo : SERIES ID CORCHETE_IZQ ENTERO CORCHETE_DER DOS_PUNTOS tipoDato ( LLAVE_IZQ expresion (COMA expresion)* LLAVE_DER )? PUNTO_COMA ;
 
-definicionStruct : STRUCTURA ID LLAVE_IZQ (ESTO ID DOS_PUNTOS tipoDato PUNTO_COMA?)* LLAVE_DER FINIS PUNTO_COMA ;
+definicionStruct : STRUCTURA ID LLAVE_IZQ (ESTO ID DOS_PUNTOS tipoDato (PUNTO_COMA | COMA)?)* LLAVE_DER FINIS PUNTO_COMA ;
 
 funcion : (ACTIO | RATIO tipoDato) ID PAREN_IZQ parametros? PAREN_DER LLAVE_IZQ seccionVariablesLocal? instruccion* (REDDERE expresion PUNTO_COMA)? LLAVE_DER FINIS PUNTO_COMA ;
 

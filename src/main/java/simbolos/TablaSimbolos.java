@@ -5,6 +5,7 @@ public class TablaSimbolos {
     public int cantidadSimbolos;
     public TablaSimbolos padre;
     public String nombreEntorno; // Ej. "Global", "Funcion calcularPoder", "Bloque SI"
+    public String tipoRetornoEsperado = null;
 
     public TablaSimbolos(int capacidadMaxima, TablaSimbolos padre, String nombreEntorno) {
         this.simbolos = new Simbolo[capacidadMaxima];

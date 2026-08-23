@@ -33,9 +33,11 @@ public class NodoAccesoEstructura extends NodoExpresion {
         }
 
         boolean atributoEncontrado = false;
-        for (int i = 0; i < definicionStruct.cantAtributos; i++) {
-            if (definicionStruct.nombresAtributos[i].equals(this.idAtributo)) {
-                this.tipoInferido = definicionStruct.tiposAtributos[i];
+        int totalAtributos = definicionStruct.getCantidadAtributosStruct(); // Usando el getter
+
+        for (int i = 0; i < totalAtributos; i++) {
+            if (definicionStruct.getNombreAtributoStruct(i).equals(this.idAtributo)) {
+                this.tipoInferido = definicionStruct.getTipoAtributoStruct(i);
                 atributoEncontrado = true;
                 break;
             }

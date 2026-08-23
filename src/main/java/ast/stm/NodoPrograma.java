@@ -14,6 +14,8 @@ public class NodoPrograma extends NodoAST {
     public int cantFunciones = 0;
     public int cantInstrucciones = 0;
 
+    public TablaSimbolos tablaGlobalGenerada;
+
     public NodoPrograma(int capGlobales, int capFunciones, int capPrincipal) {
         this.variablesGlobales = new NodoInstruccion[capGlobales];
         this.funciones = new NodoInstruccion[capFunciones];
@@ -40,23 +42,23 @@ public class NodoPrograma extends NodoAST {
 
     @Override
     public void validarSemantica(TablaSimbolos entornoActual, GestorErrores gestorErrores) {
-        TablaSimbolos entornoGlobal = new TablaSimbolos(1000, null, "Global");
+        this.tablaGlobalGenerada = new TablaSimbolos(1000, null, "Global");
 
         for (int i = 0; i < cantGlobales; i++) {
             if (variablesGlobales[i] != null) {
-                variablesGlobales[i].validarSemantica(entornoGlobal, gestorErrores);
+                variablesGlobales[i].validarSemantica(this.tablaGlobalGenerada, gestorErrores);
             }
         }
 
         for (int i = 0; i < cantFunciones; i++) {
             if (funciones[i] != null) {
-                funciones[i].validarSemantica(entornoGlobal, gestorErrores);
+                funciones[i].validarSemantica(this.tablaGlobalGenerada, gestorErrores);
             }
         }
 
         for (int i = 0; i < cantInstrucciones; i++) {
             if (instruccionesPrincipal[i] != null) {
-                instruccionesPrincipal[i].validarSemantica(entornoGlobal, gestorErrores);
+                instruccionesPrincipal[i].validarSemantica(this.tablaGlobalGenerada, gestorErrores);
             }
         }
     }

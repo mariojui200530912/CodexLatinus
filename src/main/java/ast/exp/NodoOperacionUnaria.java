@@ -18,10 +18,23 @@ public class NodoOperacionUnaria extends NodoExpresion {
     public void validarSemantica(TablaSimbolos entornoActual, GestorErrores gestorErrores) {
         expresion.validarSemantica(entornoActual, gestorErrores);
 
-        if (operador.equals("non") && !expresion.tipoInferido.equals("bool")) {
-            gestorErrores.agregarError("Semantica", "Error: Operador 'non' solo aplicable a booleanos.", this.linea, this.columna);
+        if (operador.equals("non")) {
+            if (!expresion.tipoInferido.equals("bool") && !expresion.tipoInferido.equals("error")) {
+                gestorErrores.agregarError("Semantico", "Error: Operador 'non' solo es aplicable a valores booleanos.", this.linea, this.columna);
+                this.tipoInferido = "error";
+            } else {
+                this.tipoInferido = "bool";
+            }
+        } else if (operador.equals("-")) {
+            if (!expresion.tipoInferido.equals("numerus") && !expresion.tipoInferido.equals("decimalis") && !expresion.tipoInferido.equals("error")) {
+                gestorErrores.agregarError("Semantico", "Error: Operador negativo '-' solo es aplicable a números, se obtuvo '" + expresion.tipoInferido + "'.", this.linea, this.columna);
+                this.tipoInferido = "error";
+            } else {
+                this.tipoInferido = expresion.tipoInferido; // Conserva el tipo numérico original
+            }
+        } else {
+            this.tipoInferido = expresion.tipoInferido;
         }
-        this.tipoInferido = expresion.tipoInferido;
     }
 
     @Override

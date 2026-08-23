@@ -44,7 +44,8 @@ public class NodoFacere extends NodoInstruccion {
         for (int i = 0; i < contador; i++) {
             codigo += "    " + instrucciones[i].traducirPigLatin() + "\n";
         }
-        codigo += "} " + kwDum + " " + condicion.traducirPigLatin() + ";";
+
+        codigo += "} " + kwDum + " (" + condicion.traducirPigLatin() + ");";
         return codigo;
     }
 }

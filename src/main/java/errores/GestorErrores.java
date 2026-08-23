@@ -1,5 +1,7 @@
 package errores;
 
+
+
 public class GestorErrores {
     public ErrorAnalisis[] listaErrores;
     public int cantidadErrores;
@@ -26,7 +28,7 @@ public class GestorErrores {
         this.cantidadErrores = 0;
     }
 
-    public String obtenerReporteTexto() {
+    public String obtenerReporte() {
         if (cantidadErrores == 0) {
             return "Análisis completado sin errores. El código es válido.";
         }

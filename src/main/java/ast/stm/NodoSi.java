@@ -50,7 +50,9 @@ public class NodoSi extends NodoInstruccion {
     @Override
     public String traducirPigLatin() {
         String kwSi = TraductorPigLatin.traducirPalabra("si");
-        String codigo = kwSi + " " + condicion.traducirPigLatin() + " {\n";
+        String kwFinis = TraductorPigLatin.traducirPalabra("finis");
+
+        String codigo = kwSi + " (" + condicion.traducirPigLatin() + ") {\n";
 
         for (int i = 0; i < cantVerdadero; i++) {
             codigo += "    " + instruccionesVerdadero[i].traducirPigLatin() + "\n";
@@ -65,6 +67,7 @@ public class NodoSi extends NodoInstruccion {
             }
             codigo += "}";
         }
-        return codigo;
+
+        return codigo + " " + kwFinis + ";";
     }
 }

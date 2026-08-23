@@ -1,32 +1,28 @@
 package gui;
 
 import analyzer.CodexLexer;
+import analyzer.CodexParser;
+import ast.ConstructorAST;
+import ast.stm.NodoPrograma;
+import errores.GestorErrores;
 import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import simbolos.TablaSimbolos;
 
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class VentanaPrincipal extends JFrame {
 
-    private JTextPane areaCodigo;
-    private JTextArea areaNumerosLinea; // Margen izquierdo
-    private JLabel lblPosicionCursor;   // Barra de estado
-    private JTextArea areaConsola;
+    private Editor editor;
     private JButton btnAnalizar;
-
-    // Estilos de color predefinidos
-    private Style estiloNormal;
-    private Style estiloReservada;
-    private Style estiloNumero;
-    private Style estiloCadena;
-    private Style estiloOperador;
-    private Style estiloComment;
 
     public VentanaPrincipal() {
         setTitle("IDE Codex Latinus - Resistencia");
@@ -35,193 +31,167 @@ public class VentanaPrincipal extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        crearEstilos();
+        editor = new Editor();
 
-        // Panel Superior Botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JButton btnAbrir = new JButton("Abrir .lat");
-        JButton btnGuardar = new JButton("Guardar");
-        btnAnalizar = new JButton("Analizar Código");
-        JButton btnTraducir = new JButton("Traducir a PigLatin");
-        JButton btnPila = new JButton("Ver Pila de Llamadas");
-        JButton btnGraficas = new JButton("Ver AST y Símbolos");
+        JMenuBar menuBar = new JMenuBar();
 
-        panelBotones.add(btnAbrir);
-        panelBotones.add(btnGuardar);
-        panelBotones.add(new JSeparator(SwingConstants.VERTICAL));
-        panelBotones.add(btnAnalizar);
-        panelBotones.add(btnPila);
-        panelBotones.add(btnGraficas);
-        panelBotones.add(btnTraducir);
-        add(panelBotones, BorderLayout.NORTH);
+        JMenu menuArchivo = new JMenu("Archivo");
+        JMenuItem itemAbrir = new JMenuItem("Abrir .lat");
+        JMenuItem itemGuardar = new JMenuItem("Guardar");
 
-        // Editor de codigo
-        areaCodigo = new JTextPane();
-        areaCodigo.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        itemAbrir.addActionListener(e -> abrirArchivo());
+        itemGuardar.addActionListener(e -> guardarArchivo());
 
-        areaNumerosLinea = new JTextArea("1");
-        areaNumerosLinea.setBackground(new Color(230, 230, 230)); // Gris claro
-        areaNumerosLinea.setForeground(Color.GRAY);
-        areaNumerosLinea.setEditable(false);
-        areaNumerosLinea.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        areaNumerosLinea.setMargin(new Insets(0, 5, 0, 5));
+        menuArchivo.add(itemAbrir);
+        menuArchivo.add(itemGuardar);
+        menuBar.add(menuArchivo);
 
-        JPanel noWrapPanel = new JPanel(new BorderLayout());
-        noWrapPanel.add(areaCodigo);
-        JScrollPane scrollCodigo = new JScrollPane(noWrapPanel);
-        scrollCodigo.setRowHeaderView(areaNumerosLinea);
+        menuBar.add(Box.createHorizontalGlue());
+        menuBar.setBorder(BorderFactory.createEmptyBorder());
 
-        // Listener para colorear
-        areaCodigo.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) { actualizarEditor(); }
-            @Override
-            public void removeUpdate(DocumentEvent e) { actualizarEditor(); }
-            @Override
-            public void changedUpdate(DocumentEvent e) {  }
-        });
+        btnAnalizar = new JButton("▶ Run Codex");
+        btnAnalizar.setFont(new Font("SansSerif", Font.BOLD, 13));
+        btnAnalizar.setBackground(new Color(40, 167, 69));
+        btnAnalizar.setForeground(Color.WHITE);
+        btnAnalizar.setFocusPainted(false);
+        btnAnalizar.setOpaque(true);
+        btnAnalizar.setBorderPainted(false);
+        btnAnalizar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnAnalizar.setMargin(new Insets(2, 15, 2, 15));
 
-        // Barra de Estado (Linea y Columna)
+        menuBar.add(btnAnalizar);
+
+        setJMenuBar(menuBar);
+
         JPanel panelEstado = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        lblPosicionCursor = new JLabel("Línea: 1, Columna: 1");
-        panelEstado.add(lblPosicionCursor);
-
-        areaCodigo.addCaretListener(new CaretListener() {
-            @Override
-            public void caretUpdate(CaretEvent e) {
-                actualizarPosicionCursor();
-            }
-        });
+        panelEstado.add(editor.getLblPosicionCursor());
 
         JPanel panelEditorCompleto = new JPanel(new BorderLayout());
-        panelEditorCompleto.add(scrollCodigo, BorderLayout.CENTER);
+        panelEditorCompleto.add(editor.getScrollPaneConNumeros(), BorderLayout.CENTER);
         panelEditorCompleto.add(panelEstado, BorderLayout.SOUTH);
 
-        // Consola de Salida
-        areaConsola = new JTextArea();
-        areaConsola.setFont(new Font("Monospaced", Font.PLAIN, 13));
-        areaConsola.setEditable(false);
-        areaConsola.setBackground(new Color(40, 44, 52));
-        areaConsola.setForeground(Color.WHITE);
-        JScrollPane scrollConsola = new JScrollPane(areaConsola);
+        JScrollPane scrollConsola = new JScrollPane(editor.getAreaConsola());
         scrollConsola.setPreferredSize(new Dimension(getWidth(), 150));
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panelEditorCompleto, scrollConsola);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                panelEditorCompleto, scrollConsola);
         splitPane.setResizeWeight(0.75);
+        splitPane.setBorder(BorderFactory.createEmptyBorder());
         add(splitPane, BorderLayout.CENTER);
+
+        btnAnalizar.addActionListener(e -> analizarCodigo());
     }
 
-    private void actualizarEditor() {
-        colorearTexto();
-        actualizarNumerosDeLinea();
-    }
+    private void analizarCodigo() {
+        editor.limpiarConsola();
+        String codigo = editor.getTexto();
 
-    private void actualizarNumerosDeLinea() {
-        int conteoLineas = areaCodigo.getDocument().getDefaultRootElement().getElementCount();
-        StringBuilder numeros = new StringBuilder();
-        for (int i = 1; i <= conteoLineas; i++) {
-            numeros.append(i).append("\n");
+        if (codigo.trim().isEmpty()) {
+            editor.imprimirEnConsola("Error: El editor está vacío.");
+            return;
         }
-        areaNumerosLinea.setText(numeros.toString());
-    }
 
-    private void actualizarPosicionCursor() {
-        int posicion = areaCodigo.getCaretPosition();
-        Element root = areaCodigo.getDocument().getDefaultRootElement();
-        int fila = root.getElementIndex(posicion) + 1; // getElementIndex es base 0
-        int inicioFila = root.getElement(fila - 1).getStartOffset();
-        int columna = posicion - inicioFila + 1;
-
-        lblPosicionCursor.setText("Línea: " + fila + ", Columna: " + columna);
-    }
-
-    private void crearEstilos() {
-        StyleContext context = StyleContext.getDefaultStyleContext();
-
-        estiloNormal = context.addStyle("Normal", null);
-        StyleConstants.setForeground(estiloNormal, Color.BLACK);
-
-        estiloReservada = context.addStyle("Reservada", null);
-        StyleConstants.setForeground(estiloReservada, new Color(0, 0, 255)); // Azul
-        StyleConstants.setBold(estiloReservada, true);
-
-        estiloNumero = context.addStyle("Numero", null);
-        StyleConstants.setForeground(estiloNumero, new Color(200, 100, 0)); // Naranja
-
-        estiloCadena = context.addStyle("Cadena", null);
-        StyleConstants.setForeground(estiloCadena, new Color(0, 128, 0)); // Verde
-
-        estiloOperador = context.addStyle("Operador", null);
-        StyleConstants.setForeground(estiloOperador, new Color(150, 0, 150)); // Morado
-
-        estiloComment = context.addStyle("Comando", null);
-        StyleConstants.setForeground(estiloComment, new Color( 128, 128, 128));
-    }
-
-    private void colorearTexto() {
-        SwingUtilities.invokeLater(() -> {
+        editor.imprimirEnConsola("=== INICIANDO ANÁLISIS ===");
         try{
-            StyledDocument doc = areaCodigo.getStyledDocument();
-            String texto = doc.getText(0, doc.getLength());
+            GestorErrores gestorErrores = new GestorErrores(100);
+            CodexLexer lexer =  new CodexLexer(CharStreams.fromString(codigo));
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(gestorErrores);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-            if (texto.isEmpty()) return;
+            CodexParser parser = new CodexParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(gestorErrores);
 
-            doc.setCharacterAttributes(0, texto.length(), estiloNormal, true);
+            ParseTree arbolCST = parser.program();
 
-
-                CodexLexer lexer = new CodexLexer(CharStreams.fromString(texto));
-                lexer.removeErrorListeners();
-
-                Token token;
-                while ((token = lexer.nextToken()).getType() != Token.EOF) {
-                    int tipo = token.getType();
-                    int inicio = token.getStartIndex();
-                    int longitud = token.getText().length();
-
-                    if (esPalabraReservada(tipo)) {
-                        doc.setCharacterAttributes(inicio, longitud, estiloReservada, false);
-                    } else if (tipo == CodexLexer.ENTERO || tipo == CodexLexer.DECIMAL) {
-                        doc.setCharacterAttributes(inicio, longitud, estiloNumero, false);
-                    } else if (tipo == CodexLexer.CADENA || tipo == CodexLexer.CARACTER) {
-                        doc.setCharacterAttributes(inicio, longitud, estiloCadena, false);
-                    } else if (esOperador(tipo)) {
-                        doc.setCharacterAttributes(inicio, longitud, estiloOperador, false);
-                    } else if (tipo == CodexLexer.COMMENT || tipo == CodexLexer.BLOCK_COMMENT) {
-                        doc.setCharacterAttributes(inicio, longitud, estiloComment, false);
-                    }
-                }
-            } catch (Exception ex) {
-
+            if (gestorErrores.hayErrores()) {
+                editor.imprimirEnConsola(">>> Análisis detenido: Errores léxicos o sintácticos encontrados.");
+                editor.imprimirEnConsola(gestorErrores.obtenerReporte());
+                return;
             }
-        });
+
+            editor.imprimirEnConsola("-> Análisis Léxico y Sintáctico: OK");
+
+            // Construccion AST
+            ConstructorAST constructor = new ConstructorAST();
+            NodoPrograma programaAST = (NodoPrograma) constructor.visit(arbolCST);
+
+            // Validacion semantica
+            TablaSimbolos tablaGlobal = new TablaSimbolos(500, null, "Global");
+            programaAST.validarSemantica(tablaGlobal, gestorErrores);
+
+            if (gestorErrores.hayErrores()) {
+                editor.imprimirEnConsola(">>> Análisis detenido: Errores semánticos encontrados.");
+                editor.imprimirEnConsola(gestorErrores.obtenerReporte());
+                return;
+            }
+
+            editor.imprimirEnConsola("=== COMPILACIÓN EXITOSA ===");
+
+            SwingUtilities.invokeLater(() -> {
+                VentanaResultados resultados = new VentanaResultados();
+                resultados.setVisible(true);
+            });
+
+        } catch (Exception ex) {
+            editor.imprimirEnConsola("Error crítico del sistema durante la compilación: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
-    private boolean esPalabraReservada(int tipo) {
-        return tipo == CodexLexer.NUMERUS || tipo == CodexLexer.TEXTUM ||
-                tipo == CodexLexer.DECIMALIS || tipo == CodexLexer.LITTERA ||
-                tipo == CodexLexer.BOOL || tipo == CodexLexer.VERUM ||
-                tipo == CodexLexer.FALSUS || tipo == CodexLexer.ESTO ||
-                tipo == CodexLexer.SERIES || tipo == CodexLexer.STRUCTURA ||
-                tipo == CodexLexer.FINIS || tipo == CodexLexer.FINIS_MAIOR ||
-                tipo == CodexLexer.SI || tipo == CodexLexer.ALITER ||
-                tipo == CodexLexer.DUM || tipo == CodexLexer.FACERE ||
-                tipo == CodexLexer.PER || tipo == CodexLexer.PERGE ||
-                tipo == CodexLexer.INTERRUMPE || tipo == CodexLexer.ACTIO ||
-                tipo == CodexLexer.RATIO || tipo == CodexLexer.REDDERE ||
-                tipo == CodexLexer.VARIABILES || tipo == CodexLexer.MUNERA ||
-                tipo == CodexLexer.MAIOR || tipo == CodexLexer.NON;
+    private void abrirArchivo() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Abrir código fuente Codex Latinus");
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos Codex (*.lat)", "lat");
+        fileChooser.setFileFilter(filtro);
+
+        int seleccion = fileChooser.showOpenDialog(this);
+
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            File archivo = fileChooser.getSelectedFile();
+            try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+                StringBuilder contenido = new StringBuilder();
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    contenido.append(linea).append("\n");
+                }
+
+                editor.setTexto(contenido.toString());
+                editor.imprimirEnConsola("Archivo cargado con éxito: " + archivo.getAbsolutePath());
+
+            } catch (Exception ex) {
+                editor.imprimirEnConsola("Error al leer el archivo: " + ex.getMessage());
+            }
+        }
     }
 
-    private boolean esOperador(int tipo) {
-        return tipo == CodexLexer.LEER || tipo == CodexLexer.IMPRIMIR ||
-                tipo == CodexLexer.MAS_MAS || tipo == CodexLexer.MENOS_MENOS ||
-                tipo == CodexLexer.MAS || tipo == CodexLexer.MENOS ||
-                tipo == CodexLexer.POR || tipo == CodexLexer.DIV ||
-                tipo == CodexLexer.IGUAL_IGUAL || tipo == CodexLexer.DIFERENTE ||
-                tipo == CodexLexer.MAYOR_IGUAL || tipo == CodexLexer.MENOR_IGUAL ||
-                tipo == CodexLexer.MAYOR || tipo == CodexLexer.MENOR ||
-                tipo == CodexLexer.AND || tipo == CodexLexer.OR ||
-                tipo == CodexLexer.ASIGNACION;
+    private void guardarArchivo() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Guardar código fuente Codex Latinus");
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos Codex (*.lat)", "lat");
+        fileChooser.setFileFilter(filtro);
+
+        fileChooser.setSelectedFile(new File("nuevo_programa.lat"));
+
+        int seleccion = fileChooser.showSaveDialog(this);
+
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            File archivo = fileChooser.getSelectedFile();
+
+            if (!archivo.getName().toLowerCase().endsWith(".lat")) {
+                archivo = new File(archivo.getParentFile(), archivo.getName() + ".lat");
+            }
+
+            try (FileWriter writer = new FileWriter(archivo)) {
+                // Extraemos el texto del editor y lo escribimos
+                writer.write(editor.getTexto());
+                editor.imprimirEnConsola("Archivo guardado con éxito en: " + archivo.getAbsolutePath());
+
+            } catch (Exception ex) {
+                editor.imprimirEnConsola("Error al guardar el archivo: " + ex.getMessage());
+            }
+        }
     }
 
 }

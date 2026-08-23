@@ -5,12 +5,18 @@ import ast.exp.NodoExpresion;
 import errores.GestorErrores;
 import simbolos.TablaSimbolos;
 
-public class NodoImprimir extends NodoAST {
+public class NodoImprimir extends NodoInstruccion {
     public NodoExpresion[] expresiones;
     public int contador = 0;
 
     public NodoImprimir(int capacidad) {
         this.expresiones = new NodoExpresion[capacidad];
+    }
+
+    public void agregarExpresion(NodoExpresion exp) {
+        if (contador < expresiones.length) {
+            expresiones[contador++] = exp;
+        }
     }
 
     @Override
@@ -24,7 +30,6 @@ public class NodoImprimir extends NodoAST {
     public String traducirPigLatin() {
         String instruccion = "";
 
-        // Reconstruimos la cadena de impresiones: %OINK expr %OINK expr;
         for (int i = 0; i < contador; i++) {
             instruccion += "%OINK " + expresiones[i].traducirPigLatin() + " ";
         }

@@ -36,10 +36,13 @@ public class NodoDum extends NodoInstruccion {
     @Override
     public String traducirPigLatin() {
         String kwDum = TraductorPigLatin.traducirPalabra("dum");
-        String codigo = kwDum + " " + condicion.traducirPigLatin() + " {\n";
+        String kwFinis = TraductorPigLatin.traducirPalabra("finis");
+
+        String codigo = kwDum + " (" + condicion.traducirPigLatin() + ") {\n";
+
         for (int i = 0; i < contador; i++) {
             codigo += "    " + instrucciones[i].traducirPigLatin() + "\n";
         }
-        return codigo + "}";
+        return codigo + "} " + kwFinis + ";";
     }
 }

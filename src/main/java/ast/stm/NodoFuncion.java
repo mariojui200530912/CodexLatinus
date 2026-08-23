@@ -39,7 +39,7 @@ public class NodoFuncion extends NodoInstruccion {
         }
 
         TablaSimbolos entornoLocal = new TablaSimbolos(200, entornoActual, "Funcion " + this.id);
-
+        entornoLocal.tipoRetornoEsperado = this.tipoRetorno;
         for (int i = 0; i < nombresParametros.length; i++) {
             if (nombresParametros[i] != null) {
                 simFunc.agregarTipoParametro(tiposParametros[i]);
@@ -63,17 +63,21 @@ public class NodoFuncion extends NodoInstruccion {
         String tipo = tipoRetorno != null ? TraductorPigLatin.traducirPalabra("ratio") + " " + TraductorPigLatin.traducirPalabra(tipoRetorno) : TraductorPigLatin.traducirPalabra("actio");
         String codigo = tipo + " " + TraductorPigLatin.traducirPalabra(this.id) + "(";
 
+        String kwEsto = TraductorPigLatin.traducirPalabra("esto");
         for (int i = 0; i < nombresParametros.length; i++) {
             if (nombresParametros[i] != null) {
-                codigo += TraductorPigLatin.traducirPalabra(nombresParametros[i]) + " : " + TraductorPigLatin.traducirPalabra(tiposParametros[i]);
+                codigo += kwEsto + " " + TraductorPigLatin.traducirPalabra(nombresParametros[i]) + " : " + TraductorPigLatin.traducirPalabra(tiposParametros[i]);
                 if (i < nombresParametros.length - 1 && nombresParametros[i+1] != null) codigo += ", ";
             }
         }
 
         codigo += ") {\n";
+
         for (int i = 0; i < cantInstrucciones; i++) {
             codigo += "    " + instrucciones[i].traducirPigLatin() + "\n";
         }
-        return codigo + "}\n";
+
+        String kwFinis = TraductorPigLatin.traducirPalabra("finis");
+        return codigo + "} " + kwFinis + ";\n";
     }
 }

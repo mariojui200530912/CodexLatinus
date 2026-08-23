@@ -23,10 +23,9 @@ public class NodoLeer extends NodoInstruccion {
 
     @Override
     public String traducirPigLatin() {
-        String codigo = "%OINK_OINK"; // Ley Porcina de Lectura
         if (idDestino != null) {
-            codigo += " " + TraductorPigLatin.traducirPalabra(idDestino);
+            return TraductorPigLatin.traducirPalabra(idDestino) + " %OINK_OINK;";
         }
-        return codigo + ";";
+        return "%OINK_OINK;";
     }
 }

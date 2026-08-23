@@ -46,4 +46,22 @@ public class Simbolo {
             tiposParametros[cantParametros++] = tipo;
         }
     }
+
+    public int getCantidadAtributosStruct() {
+        return this.cantAtributos;
+    }
+
+    public String getNombreAtributoStruct(int indice) {
+        if (nombresAtributos != null && indice >= 0 && indice < cantAtributos) {
+            return nombresAtributos[indice];
+        }
+        return null;
+    }
+
+    public String getTipoAtributoStruct(int indice) {
+        if (tiposAtributos != null && indice >= 0 && indice < cantAtributos) {
+            return tiposAtributos[indice];
+        }
+        return null;
+    }
 }
