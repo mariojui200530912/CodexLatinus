@@ -5,6 +5,7 @@ import analyzer.CodexParser;
 import ast.ConstructorAST;
 import ast.stm.NodoPrograma;
 import errores.GestorErrores;
+import errores.ManejadorErrores;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -94,14 +95,15 @@ public class VentanaPrincipal extends JFrame {
         editor.imprimirEnConsola("=== INICIANDO ANÁLISIS ===");
         try{
             GestorErrores gestorErrores = new GestorErrores(100);
+            // LEXICO
             CodexLexer lexer =  new CodexLexer(CharStreams.fromString(codigo));
             lexer.removeErrorListeners();
-            lexer.addErrorListener(gestorErrores);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            lexer.addErrorListener(new ManejadorErrores(gestorErrores, "Léxico"));
 
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
             CodexParser parser = new CodexParser(tokens);
             parser.removeErrorListeners();
-            parser.addErrorListener(gestorErrores);
+            parser.addErrorListener(new ManejadorErrores(gestorErrores, "Sintáctico"));
 
             ParseTree arbolCST = parser.program();
 
@@ -129,10 +131,10 @@ public class VentanaPrincipal extends JFrame {
 
             editor.imprimirEnConsola("=== COMPILACIÓN EXITOSA ===");
 
-            SwingUtilities.invokeLater(() -> {
-                VentanaResultados resultados = new VentanaResultados();
-                resultados.setVisible(true);
-            });
+                SwingUtilities.invokeLater(() -> {
+                    VentanaResultados resultados = new VentanaResultados(programaAST, tablaGlobal);
+                    resultados.setVisible(true);
+                });
 
         } catch (Exception ex) {
             editor.imprimirEnConsola("Error crítico del sistema durante la compilación: " + ex.getMessage());
