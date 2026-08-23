@@ -9,6 +9,7 @@ import errores.ManejadorErrores;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import pila.RastreadorPila;
 import simbolos.TablaSimbolos;
 
 import javax.swing.*;
@@ -104,6 +105,8 @@ public class VentanaPrincipal extends JFrame {
             CodexParser parser = new CodexParser(tokens);
             parser.removeErrorListeners();
             parser.addErrorListener(new ManejadorErrores(gestorErrores, "Sintáctico"));
+            RastreadorPila rastreador = new RastreadorPila(CodexParser.ruleNames);
+            parser.addParseListener(rastreador);
 
             ParseTree arbolCST = parser.program();
 
@@ -132,7 +135,7 @@ public class VentanaPrincipal extends JFrame {
             editor.imprimirEnConsola("=== COMPILACIÓN EXITOSA ===");
 
                 SwingUtilities.invokeLater(() -> {
-                    VentanaResultados resultados = new VentanaResultados(programaAST, tablaGlobal);
+                    VentanaResultados resultados = new VentanaResultados(programaAST, tablaGlobal, rastreador.historialEstados);
                     resultados.setVisible(true);
                 });
 

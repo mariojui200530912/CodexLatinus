@@ -26,8 +26,8 @@ public class GraficadorAST {
 
             mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
             layout.setOrientation(SwingConstants.NORTH);
-            layout.setIntraCellSpacing(50);
-            layout.setInterRankCellSpacing(60);
+            layout.setIntraCellSpacing(60);
+            layout.setInterRankCellSpacing(80);
             layout.execute(parent);
 
         } finally {
@@ -40,29 +40,45 @@ public class GraficadorAST {
 
         String etiqueta = obtenerEtiqueta(nodoActual);
 
-        int ancho = Math.max(100, etiqueta.length() * 8);
-        int alto = 40;
+        int ancho = Math.max(120, etiqueta.length() * 8);
+        int alto = 45;
 
-        String estiloNodo = "fillColor=#E3F2FD;strokeColor=#1976D2;fontColor=#000000;rounded=1;fontFamily=Monospaced;";
-        String estiloArista = "strokeColor=#546E7A;edgeStyle=orthogonalEdgeStyle;";
+        // Estilos tipos de nodos
+        String estiloNormal = "fillColor=#E3F2FD;strokeColor=#1976D2;fontColor=#000000;rounded=1;fontFamily=Monospaced;fontStyle=1;";
+        String estiloSeccion = "fillColor=#FFD54F;strokeColor=#F57F17;fontColor=#000000;rounded=1;fontFamily=Monospaced;fontStyle=1;shadow=1;";
+        String estiloArista = "strokeColor=#546E7A;edgeStyle=orthogonalEdgeStyle;rounded=1;";
 
-        Object verticeActual = graph.insertVertex(parent, null, etiqueta, 0, 0, ancho, alto, estiloNodo);
+        Object verticeActual = graph.insertVertex(parent, null, etiqueta, 0, 0, ancho, alto, estiloNormal);
 
         if (verticePadre != null) {
             graph.insertEdge(parent, null, "", verticePadre, verticeActual, estiloArista);
         }
 
-        // Enrutar hijos
         if (nodoActual instanceof NodoPrograma) {
             NodoPrograma np = (NodoPrograma) nodoActual;
-            for (int i = 0; i < np.cantGlobales; i++) {
-                recorrerNodo(np.variablesGlobales[i], verticeActual);
+
+            if (np.cantGlobales > 0) {
+                Object verticeVars = graph.insertVertex(parent, null, "Sección\nVARIABILES", 0, 0, 140, 45, estiloSeccion);
+                graph.insertEdge(parent, null, "", verticeActual, verticeVars, estiloArista);
+                for (int i = 0; i < np.cantGlobales; i++) {
+                    recorrerNodo(np.variablesGlobales[i], verticeVars);
+                }
             }
-            for (int i = 0; i < np.cantFunciones; i++) {
-                recorrerNodo(np.funciones[i], verticeActual);
+
+            if (np.cantFunciones > 0) {
+                Object verticeFuncs = graph.insertVertex(parent, null, "Sección\nMUNERA", 0, 0, 140, 45, estiloSeccion);
+                graph.insertEdge(parent, null, "", verticeActual, verticeFuncs, estiloArista);
+                for (int i = 0; i < np.cantFunciones; i++) {
+                    recorrerNodo(np.funciones[i], verticeFuncs);
+                }
             }
-            for (int i = 0; i < np.cantInstrucciones; i++) {
-                recorrerNodo(np.instruccionesPrincipal[i], verticeActual);
+
+            if (np.cantInstrucciones > 0) {
+                Object verticeMaior = graph.insertVertex(parent, null, "Sección\nMAIOR", 0, 0, 140, 45, estiloSeccion);
+                graph.insertEdge(parent, null, "", verticeActual, verticeMaior, estiloArista);
+                for (int i = 0; i < np.cantInstrucciones; i++) {
+                    recorrerNodo(np.instruccionesPrincipal[i], verticeMaior);
+                }
             }
         }
         else if (nodoActual instanceof NodoOperacionBinaria) {
@@ -98,14 +114,12 @@ public class GraficadorAST {
         else if (nodoActual instanceof NodoDum) {
             NodoDum nDum = (NodoDum) nodoActual;
             recorrerNodo(nDum.condicion, verticeActual);
-
             for (int i = 0; i < nDum.contador; i++) {
                 recorrerNodo(nDum.instrucciones[i], verticeActual);
             }
         }
         else if (nodoActual instanceof NodoFacere) {
             NodoFacere nFacere = (NodoFacere) nodoActual;
-
             for (int i = 0; i < nFacere.contador; i++) {
                 recorrerNodo(nFacere.instrucciones[i], verticeActual);
             }
@@ -139,7 +153,6 @@ public class GraficadorAST {
         }
         else if (nodoActual instanceof NodoRetorno) {
             NodoRetorno nRet = (NodoRetorno) nodoActual;
-
             if (nRet.expresionRetorno != null) {
                 recorrerNodo(nRet.expresionRetorno, verticeActual);
             }
@@ -147,11 +160,9 @@ public class GraficadorAST {
         else if (nodoActual instanceof NodoSi) {
             NodoSi nSi = (NodoSi) nodoActual;
             recorrerNodo(nSi.condicion, verticeActual);
-
             for (int i = 0; i < nSi.cantVerdadero; i++) {
                 recorrerNodo(nSi.instruccionesVerdadero[i], verticeActual);
             }
-
             if (nSi.instruccionesFalso != null) {
                 for (int i = 0; i < nSi.cantFalso; i++) {
                     recorrerNodo(nSi.instruccionesFalso[i], verticeActual);
@@ -172,9 +183,8 @@ public class GraficadorAST {
         return verticeActual;
     }
 
-
     private String obtenerEtiqueta(NodoAST nodo) {
-        if (nodo instanceof NodoPrograma) return "Programa";
+        if (nodo instanceof NodoPrograma) return "Codex\nLatinus";
 
             // --- EXPRESIONES ---
         else if (nodo instanceof NodoOperacionBinaria) {
@@ -188,9 +198,7 @@ public class GraficadorAST {
             return "Literal\n" + nl.valor;
         }
         else if (nodo instanceof NodoIdentificador) { return "ID\n" + ((NodoIdentificador) nodo).id; }
-        else if (nodo instanceof NodoAccesoArreglo) {
-            return "Acceso Arreglo\n" + ((NodoAccesoArreglo) nodo).idArreglo;
-        }
+        else if (nodo instanceof NodoAccesoArreglo) return "Acceso Arreglo\n" + ((NodoAccesoArreglo) nodo).idArreglo;
         else if (nodo instanceof NodoAccesoEstructura) {
             NodoAccesoEstructura nae = (NodoAccesoEstructura) nodo;
             return "Acceso Struct\n" + nae.idEstructura + "." + nae.idAtributo;
@@ -202,7 +210,7 @@ public class GraficadorAST {
         else if (nodo instanceof NodoDeclaracionVar) return "Decl. Var\n" + ((NodoDeclaracionVar) nodo).id;
         else if (nodo instanceof NodoDeclaracionArreglo) return "Decl. Arreglo\n" + ((NodoDeclaracionArreglo) nodo).id;
         else if (nodo instanceof NodoDefinicionStruct) {
-            return "Definición Struct\n" + ((NodoDefinicionStruct) nodo).id;
+            return "Definicion Struct\n" + ((NodoDefinicionStruct) nodo).id;
         }
         else if (nodo instanceof NodoInstanciaEstructura) return "Instancia\nStruct";
 
@@ -219,7 +227,7 @@ public class GraficadorAST {
             return "Interrupción\n(" + ni.tipo + ")";
         }
 
-            // --- FUNCIONES Y SISTEMA ---
+        // --- FUNCIONES Y SISTEMA ---
         else if (nodo instanceof NodoFuncion) return "Funcion\n" + ((NodoFuncion) nodo).id;
         else if (nodo instanceof NodoRetorno) return "Retorno\n(reddere)";
         else if (nodo instanceof NodoImprimir) return "Imprimir\n(>>)";

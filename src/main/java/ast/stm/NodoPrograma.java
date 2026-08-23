@@ -42,23 +42,23 @@ public class NodoPrograma extends NodoAST {
 
     @Override
     public void validarSemantica(TablaSimbolos entornoActual, GestorErrores gestorErrores) {
-        this.tablaGlobalGenerada = new TablaSimbolos(1000, null, "Global");
+
 
         for (int i = 0; i < cantGlobales; i++) {
             if (variablesGlobales[i] != null) {
-                variablesGlobales[i].validarSemantica(this.tablaGlobalGenerada, gestorErrores);
+                variablesGlobales[i].validarSemantica(entornoActual, gestorErrores);
             }
         }
 
         for (int i = 0; i < cantFunciones; i++) {
             if (funciones[i] != null) {
-                funciones[i].validarSemantica(this.tablaGlobalGenerada, gestorErrores);
+                funciones[i].validarSemantica(entornoActual, gestorErrores);
             }
         }
 
         for (int i = 0; i < cantInstrucciones; i++) {
             if (instruccionesPrincipal[i] != null) {
-                instruccionesPrincipal[i].validarSemantica(this.tablaGlobalGenerada, gestorErrores);
+                instruccionesPrincipal[i].validarSemantica(entornoActual, gestorErrores);
             }
         }
     }
@@ -68,22 +68,28 @@ public class NodoPrograma extends NodoAST {
         String codigoPig = "";
 
         if(cantGlobales > 0) {
-            codigoPig += TraductorPigLatin.traducirPalabra("VARIABILES") + "-\n";
+            codigoPig += TraductorPigLatin.traducirPalabra("VARIABILES") + ">\n";
             for (int i = 0; i < cantGlobales; i++) {
-                codigoPig += variablesGlobales[i].traducirPigLatin() + "\n";
+                if (variablesGlobales[i] != null) {
+                    codigoPig += variablesGlobales[i].traducirPigLatin() + "\n";
+                }
             }
         }
 
         if (cantFunciones > 0) {
             codigoPig += TraductorPigLatin.traducirPalabra("MUNERA") + ">\n";
             for (int i = 0; i < cantFunciones; i++) {
-                codigoPig += funciones[i].traducirPigLatin() + "\n";
+                if (funciones[i] != null) {
+                    codigoPig += funciones[i].traducirPigLatin() + "\n";
+                }
             }
         }
 
         codigoPig += TraductorPigLatin.traducirPalabra("MAIOR") + ">\n";
         for (int i = 0; i < cantInstrucciones; i++) {
-            codigoPig += instruccionesPrincipal[i].traducirPigLatin() + "\n";
+            if (instruccionesPrincipal[i] != null) {
+                codigoPig += instruccionesPrincipal[i].traducirPigLatin() + "\n";
+            }
         }
 
         codigoPig += TraductorPigLatin.traducirPalabra("FINIS") + ";\n";

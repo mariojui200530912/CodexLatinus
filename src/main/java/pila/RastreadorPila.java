@@ -1,46 +1,54 @@
 package pila;
 
-import analyzer.CodexBaseListener;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class RastreadorPila extends CodexBaseListener {
-    public String[] historialOperaciones;
-    public int contadorOperaciones;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
+public class RastreadorPila implements ParseTreeListener {
+    public List<EstadoPila> historialEstados;
+    private Stack<String> pilaActual;
     private String[] nombresReglas;
 
-    public RastreadorPila(int capacidadMaxima, String[] nombresReglas) {
-        this.historialOperaciones = new String[capacidadMaxima];
+    public RastreadorPila(String[] nombresReglas) {
+        this.historialEstados = new ArrayList<>();
+        this.pilaActual = new Stack<>();
         this.nombresReglas = nombresReglas;
-        this.contadorOperaciones = 0;
-    }
-
-    private void registrarOperacion(String operacion){
-        if (contadorOperaciones < this.historialOperaciones.length) {
-            this.historialOperaciones[contadorOperaciones++] = operacion;
-        }
+        historialEstados.add(new EstadoPila(pilaActual, "INICIO DEL ANÁLISIS"));
     }
 
     @Override
-    public void visitTerminal(TerminalNode node){
-        if(node.getSymbol().getType() != Token.EOF){
-            registrarOperacion("SHIFT: Se lee token '" + node.getText() + "'");
-        }
+    public void enterEveryRule(ParserRuleContext ctx) {
+        String nombreRegla = nombresReglas[ctx.getRuleIndex()];
+        pilaActual.push(nombreRegla);
+        historialEstados.add(new EstadoPila(pilaActual, "goto --> " + nombreRegla));
     }
 
     @Override
     public void exitEveryRule(ParserRuleContext ctx) {
         String nombreRegla = nombresReglas[ctx.getRuleIndex()];
-        registrarOperacion("REDUCE: Regla <" + nombreRegla + "> completada");
+        if (!pilaActual.isEmpty()) {
+            pilaActual.pop();
+        }
+        historialEstados.add(new EstadoPila(pilaActual, "reduce a <-- " + nombreRegla));
+    }
+
+    @Override
+    public void visitTerminal(TerminalNode node) {
+        String token = node.getText();
+        if (token.equals("<EOF>")) {
+            historialEstados.add(new EstadoPila(pilaActual, "accept --"));
+        } else {
+            historialEstados.add(new EstadoPila(pilaActual, "shift -->" + token));
+        }
     }
 
     @Override
     public void visitErrorNode(ErrorNode node) {
-        registrarOperacion("ERROR: Símbolo inesperado '" + node.getText() + "'");
-    }
-
-    public void registrarAccept() {
-        registrarOperacion("ACCEPT: Análisis finalizado con éxito.");
+        historialEstados.add(new EstadoPila(pilaActual, "error " + node.getText()));
     }
 }

@@ -5,6 +5,8 @@ public class TraductorPigLatin {
         if (original == null || original.length() == 0) return original;
         if (!Character.isLetter(original.charAt(0))) return original;
 
+        boolean esTodoMayuscula = original.equals(original.toUpperCase());
+
         char[] caracteres = original.toCharArray();
         int indicePrimeraVocal = -1;
 
@@ -16,14 +18,18 @@ public class TraductorPigLatin {
             }
         }
 
+        String traduccion = "";
+
         if (indicePrimeraVocal == 0) {
-            return original + "way";
-        }else if (indicePrimeraVocal > 0) {
+            traduccion = original + (esTodoMayuscula ? "WAY" : "way");
+        } else if (indicePrimeraVocal > 0) {
             String consonantes = original.substring(0, indicePrimeraVocal);
             String resto = original.substring(indicePrimeraVocal);
-            return resto + consonantes + "ay";
+            traduccion = resto + consonantes + (esTodoMayuscula ? "AY" : "ay");
+        } else {
+            traduccion = original + (esTodoMayuscula ? "AY" : "ay");
         }
 
-        return original + "ay";
+        return traduccion;
     }
 }

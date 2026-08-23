@@ -3,8 +3,10 @@ package gui;
 import ast.stm.NodoPrograma;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
+import pila.EstadoPila;
 import simbolos.TablaSimbolos;
 
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.*;
@@ -16,10 +18,12 @@ public class VentanaResultados extends JFrame {
 
     private NodoPrograma raizAST;
     private TablaSimbolos tablaSimbolos;
+    private List<EstadoPila> historialPila;
 
-    public VentanaResultados(NodoPrograma raizAST, TablaSimbolos tablaSimbolos) {
-        this.raizAST = raizAST;
-        this.tablaSimbolos = tablaSimbolos;
+    public VentanaResultados(NodoPrograma raiz, TablaSimbolos tabla, List<EstadoPila> historialPila) {
+        this.raizAST = raiz;
+        this.tablaSimbolos = tabla;
+        this.historialPila = historialPila;
 
         setTitle("Resultados del Análisis - Codex Latinus");
         setSize(1000, 750);
@@ -27,18 +31,29 @@ public class VentanaResultados extends JFrame {
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // Botones
+        // --- PANEL DE BOTONES SUPERIOR ---
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         JButton btnPigLatin = new JButton("Traducir a PigLatin");
-        btnPigLatin.addActionListener(e -> mostrarVentanaTraduccion());
         JButton btnPilaLlamadas = new JButton("Ver Pila de Llamadas");
+
+        // 1. Acción del botón de la Pila
+        btnPilaLlamadas.addActionListener(e -> {
+            if (this.historialPila != null && !this.historialPila.isEmpty()) {
+                new VentanaPila(this.historialPila).setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "No hay historial de la pila disponible.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        // 2. Acción del botón Pig Latin
+        btnPigLatin.addActionListener(e -> mostrarVentanaTraduccion());
+
         panelBotones.add(btnPilaLlamadas);
         panelBotones.add(btnPigLatin);
         add(panelBotones, BorderLayout.NORTH);
 
-        // Lienzo para JGraph
+        // --- CONFIGURACIÓN DEL LIENZO JGRAPHX ---
         mxGraph grafoAST = new mxGraph();
-        // evitar que usuario edite
         grafoAST.setCellsEditable(false);
         grafoAST.setCellsDisconnectable(false);
         grafoAST.setCellsBendable(false);
@@ -47,33 +62,36 @@ public class VentanaResultados extends JFrame {
         componenteGraficaAST.getViewport().setOpaque(true);
         componenteGraficaAST.getViewport().setBackground(Color.WHITE);
 
+        // --- SISTEMA DE PESTAÑAS ---
         JTabbedPane panelPestanas = new JTabbedPane();
-
         panelPestanas.addTab("Árbol de Sintaxis Abstracta (AST)", componenteGraficaAST);
 
+        // Inyectar la Tabla de Símbolos
         JScrollPane scrollTablaSimbolos = construirVistaTablaSimbolos(this.tablaSimbolos);
         panelPestanas.addTab("Tabla de Símbolos", scrollTablaSimbolos);
 
         add(panelPestanas, BorderLayout.CENTER);
+
+        // Dibujar el árbol sintáctico
         dibujarAST();
     }
 
     public void dibujarAST() {
+        if (this.raizAST == null) return;
         mxGraph graph = componenteGraficaAST.getGraph();
-        GraficadorAST graficadorAST = new GraficadorAST();
-        Object parent = graph.getDefaultParent();
-
-        graficadorAST.graficar(this.raizAST, graph);
+        GraficadorAST graficador = new GraficadorAST();
+        graficador.graficar(this.raizAST, graph);
     }
+
+    // =========================================================================
+    // MÉTODOS PARA LA TABLA DE SÍMBOLOS
+    // =========================================================================
 
     private JScrollPane construirVistaTablaSimbolos(TablaSimbolos entornoGlobal) {
         String[] columnas = {"ID (Nombre)", "Categoría", "Tipo de Dato", "Entorno"};
-
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
+            public boolean isCellEditable(int row, int column) { return false; }
         };
 
         if (entornoGlobal != null) {
@@ -109,6 +127,10 @@ public class VentanaResultados extends JFrame {
         }
     }
 
+    // =========================================================================
+    // MÉTODOS PARA EL TRADUCTOR PIG LATIN
+    // =========================================================================
+
     private void mostrarVentanaTraduccion() {
         if (this.raizAST == null) return;
 
@@ -123,7 +145,7 @@ public class VentanaResultados extends JFrame {
         areaTexto.setFont(new Font("Monospaced", Font.PLAIN, 15));
         areaTexto.setEditable(false);
         areaTexto.setBackground(new Color(30, 30, 30));
-        areaTexto.setForeground(new Color(152, 195, 121)); // Un verde estilo terminal
+        areaTexto.setForeground(new Color(152, 195, 121));
         areaTexto.setMargin(new Insets(10, 10, 10, 10));
 
         dialogoPig.add(new JScrollPane(areaTexto), BorderLayout.CENTER);
@@ -145,16 +167,13 @@ public class VentanaResultados extends JFrame {
         fileChooser.setDialogTitle("Exportar como código Pig Latin");
         javax.swing.filechooser.FileNameExtensionFilter filtro = new javax.swing.filechooser.FileNameExtensionFilter("Archivos PigLatin (*.pig)", "pig");
         fileChooser.setFileFilter(filtro);
-
         fileChooser.setSelectedFile(new java.io.File("traduccion.pig"));
 
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             java.io.File archivo = fileChooser.getSelectedFile();
-
             if (!archivo.getName().toLowerCase().endsWith(".pig")) {
                 archivo = new java.io.File(archivo.getParentFile(), archivo.getName() + ".pig");
             }
-
             try (java.io.FileWriter writer = new java.io.FileWriter(archivo)) {
                 writer.write(codigo);
                 JOptionPane.showMessageDialog(this, "Archivo guardado exitosamente en:\n" + archivo.getAbsolutePath(), "Éxito", JOptionPane.INFORMATION_MESSAGE);

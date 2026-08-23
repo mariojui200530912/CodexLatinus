@@ -321,6 +321,12 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
 
         int capParams = ctx.parametros() != null ? ctx.parametros().parametro().size() : 0;
         int capInstrucciones = ctx.instruccion().size();
+        if (ctx.seccionVariablesLocal() != null) {
+            capInstrucciones += ctx.seccionVariablesLocal().declaracionVar().size();
+        }
+        if (ctx.REDDERE() != null) {
+            capInstrucciones += 1; // 1 espacio extra para el nodo de retorno
+        }
 
         NodoFuncion nodoFuncion = new NodoFuncion(id, tipoRetorno, capParams, capInstrucciones);
 
