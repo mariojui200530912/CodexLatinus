@@ -41,6 +41,7 @@ public class NodoFuncion extends NodoInstruccion {
 
         TablaSimbolos entornoLocal = new TablaSimbolos(200, entornoActual, "Funcion " + this.id);
         entornoLocal.tipoRetornoEsperado = this.tipoRetorno;
+
         for (int i = 0; i < nombresParametros.length; i++) {
             if (nombresParametros[i] != null) {
                 simFunc.agregarTipoParametro(tiposParametros[i]);
@@ -54,8 +55,33 @@ public class NodoFuncion extends NodoInstruccion {
             }
         }
 
+        boolean tieneRetorno = false;
+        String tipoRetornado = null;
+
         for (int i = 0; i < cantInstrucciones; i++) {
-            instrucciones[i].validarSemantica(entornoLocal, gestorErrores);
+            if (instrucciones[i] != null) {
+                instrucciones[i].validarSemantica(entornoLocal, gestorErrores);
+
+                if (instrucciones[i] instanceof NodoRetorno) {
+                    tieneRetorno = true;
+                    NodoRetorno nodoRet = (NodoRetorno) instrucciones[i];
+                    if (nodoRet.expresionRetorno != null) {
+                        tipoRetornado = nodoRet.expresionRetorno.tipoInferido;
+                    }
+                }
+            }
+        }
+
+        if (this.tipoRetorno != null) {
+            if (!tieneRetorno) {
+                gestorErrores.agregarError("Semántico", "La función 'ratio' (" + this.id + ") debe tener al menos una instrucción 'reddere' en su cuerpo.", this.linea, this.columna);
+            } else if (tipoRetornado != null && !this.tipoRetorno.equals(tipoRetornado) && !tipoRetornado.equals("error")) {
+                gestorErrores.agregarError("Semántico", "Tipo de retorno incorrecto en función '" + this.id + "'. Se esperaba '" + this.tipoRetorno + "' pero se intenta retornar '" + tipoRetornado + "'.", this.linea, this.columna);
+            }
+        } else {
+            if (tieneRetorno) {
+                gestorErrores.agregarError("Semántico", "La función 'actio' (" + this.id + ") no debe retornar ningún valor.", this.linea, this.columna);
+            }
         }
     }
 

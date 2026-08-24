@@ -6,6 +6,7 @@ import ast.stm.*;
 import ast.exp.*;
 
 public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
+    private int ciclosAbiertos = 0;
 
     // ESTRUCTURA PRINCIPAL DEL PROGRAMA
     @Override
@@ -295,6 +296,7 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
     // ESTRUCTURAS DE CONTROL DE FLUJO
     @Override
     public NodoAST visitCicloDum(CodexParser.CicloDumContext ctx) {
+        ciclosAbiertos++;
         NodoAST condicion = visit(ctx.expresion());
         int capInstrucciones = ctx.instruccion().size();
         int linea = ctx.start.getLine();
@@ -305,7 +307,7 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
         for (CodexParser.InstruccionContext instCtx : ctx.instruccion()) {
             nodoDum.agregarInstruccion((NodoInstruccion) visit(instCtx));
         }
-
+        ciclosAbiertos--;
         return nodoDum;
     }
 
@@ -360,6 +362,7 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
 
     @Override
     public NodoAST visitCicloFacere(CodexParser.CicloFacereContext ctx) {
+        ciclosAbiertos++;
         NodoExpresion condicion = (NodoExpresion) visit(ctx.expresion());
         int capInstrucciones = ctx.instruccion().size();
         int linea = ctx.start.getLine();
@@ -369,12 +372,13 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
         for (CodexParser.InstruccionContext instCtx : ctx.instruccion()) {
             nodoFacere.agregarInstruccion((NodoInstruccion) visit(instCtx));
         }
-
+        ciclosAbiertos--;
         return nodoFacere;
     }
 
     @Override
     public NodoAST visitCicloPer(CodexParser.CicloPerContext ctx) {
+        ciclosAbiertos++;
         NodoDeclaracionVar inicializacion = (NodoDeclaracionVar) visit(ctx.declaracionVar());
         NodoExpresion condicion = (NodoExpresion) visit(ctx.expresion());
         String idIterador = ctx.ID().getText();
@@ -388,7 +392,7 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
         for (CodexParser.InstruccionContext instCtx : ctx.instruccion()) {
             nodoPer.agregarInstruccion((NodoInstruccion) visit(instCtx));
         }
-
+        ciclosAbiertos--;
         return nodoPer;
     }
 
@@ -399,6 +403,9 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
         int columna = ctx.start.getCharPositionInLine();
 
         NodoInterrupcion nodo = new NodoInterrupcion(tipo, linea, columna);
+        if (ciclosAbiertos == 0) {
+            System.err.println("Error Semantico en [" + linea + ":" + columna + "]: La instruccion '" + tipo + "' solo se puede usar dentro de un ciclo.");
+        }
 
         return nodo;
     }
@@ -413,11 +420,9 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
         int capInstrucciones = ctx.instruccion().size();
         int linea = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
+
         if (ctx.seccionVariablesLocal() != null) {
             capInstrucciones += ctx.seccionVariablesLocal().declaracionVar().size();
-        }
-        if (ctx.REDDERE() != null) {
-            capInstrucciones += 1;
         }
 
         NodoFuncion nodoFuncion = new NodoFuncion(id, tipoRetorno, capParams, capInstrucciones, linea, columna);
@@ -438,15 +443,9 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
             }
         }
 
-        // Procesar cuerpo de la función
+        // Procesar cuerpo de la funcion
         for (CodexParser.InstruccionContext instCtx : ctx.instruccion()) {
             nodoFuncion.agregarInstruccion((NodoInstruccion) visit(instCtx));
-        }
-
-        // Procesar el retorno si existe
-        if (ctx.REDDERE() != null) {
-            NodoExpresion exprRetorno = (NodoExpresion) visit(ctx.expresion());
-            nodoFuncion.agregarInstruccion(new NodoRetorno(exprRetorno, linea, columna));
         }
 
         return nodoFuncion;
@@ -490,5 +489,13 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
             return nodoImprimir;
         }
         return null;
+    }
+
+    @Override
+    public NodoAST visitRetorno(CodexParser.RetornoContext ctx) {
+        NodoExpresion expr = (NodoExpresion) visit(ctx.expresion());
+        int linea = ctx.start.getLine();
+        int columna = ctx.start.getCharPositionInLine();
+        return new NodoRetorno(expr, linea, columna);
     }
 }

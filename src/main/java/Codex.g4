@@ -24,7 +24,7 @@ atributoStruct : ESTO ID DOS_PUNTOS tipoDato expresion?
 
 definicionStruct : STRUCTURA ID LLAVE_IZQ (atributoStruct (PUNTO_COMA | COMA)?)* LLAVE_DER FINIS PUNTO_COMA ;
 
-funcion : (ACTIO | RATIO tipoDato) ID PAREN_IZQ parametros? PAREN_DER LLAVE_IZQ seccionVariablesLocal? instruccion* (REDDERE expresion PUNTO_COMA)? LLAVE_DER FINIS PUNTO_COMA ;
+funcion : (ACTIO | RATIO tipoDato) ID PAREN_IZQ parametros? PAREN_DER LLAVE_IZQ seccionVariablesLocal? instruccion* LLAVE_DER FINIS PUNTO_COMA ;
 
 seccionVariablesLocal : VARIABILES CORCHETE_IZQ declaracionVar* CORCHETE_DER ;
 
@@ -36,9 +36,12 @@ instruccion : declaracionVar
             | estructuraControl
             | funcionEspecial
             | llamadaFuncion PUNTO_COMA
-            | interrupcion ;
+            | interrupcion
+            | retorno;
 
 interrupcion : ( PERGE | INTERRUMPE ) PUNTO_COMA ;
+
+retorno : REDDERE expresion PUNTO_COMA ;
 
 asignacion : ID ( PUNTO ID | CORCHETE_IZQ expresion CORCHETE_DER )* ASIGNACION expresion PUNTO_COMA ;
 

@@ -168,6 +168,16 @@ public interface CodexListener extends ParseTreeListener {
 	 */
 	void exitInterrupcion(CodexParser.InterrupcionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CodexParser#retorno}.
+	 * @param ctx the parse tree
+	 */
+	void enterRetorno(CodexParser.RetornoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CodexParser#retorno}.
+	 * @param ctx the parse tree
+	 */
+	void exitRetorno(CodexParser.RetornoContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CodexParser#asignacion}.
 	 * @param ctx the parse tree
 	 */

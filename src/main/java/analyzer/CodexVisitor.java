@@ -107,6 +107,12 @@ public interface CodexVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInterrupcion(CodexParser.InterrupcionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CodexParser#retorno}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRetorno(CodexParser.RetornoContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CodexParser#asignacion}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
