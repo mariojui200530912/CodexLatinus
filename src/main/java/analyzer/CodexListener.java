@@ -188,6 +188,16 @@ public interface CodexListener extends ParseTreeListener {
 	 */
 	void exitAsignacion(CodexParser.AsignacionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CodexParser#incremento}.
+	 * @param ctx the parse tree
+	 */
+	void enterIncremento(CodexParser.IncrementoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CodexParser#incremento}.
+	 * @param ctx the parse tree
+	 */
+	void exitIncremento(CodexParser.IncrementoContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CodexParser#estructuraControl}.
 	 * @param ctx the parse tree
 	 */

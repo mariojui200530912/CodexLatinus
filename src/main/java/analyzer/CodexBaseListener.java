@@ -233,6 +233,18 @@ public class CodexBaseListener implements CodexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterIncremento(CodexParser.IncrementoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIncremento(CodexParser.IncrementoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterEstructuraControl(CodexParser.EstructuraControlContext ctx) { }
 	/**
 	 * {@inheritDoc}

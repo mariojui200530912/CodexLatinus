@@ -43,6 +43,20 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
 
     // DECLARACIONES Y ASIGNACIONES
     @Override
+    public NodoAST visitDeclaracion(CodexParser.DeclaracionContext ctx) {
+        if (ctx.declaracionVar() != null) {
+            return visit(ctx.declaracionVar());
+        } else if (ctx.declaracionArreglo() != null) {
+            return visit(ctx.declaracionArreglo());
+        } else if (ctx.definicionStruct() != null) {
+            return visit(ctx.definicionStruct());
+        } else if (ctx.asignacion() != null) {
+            return visit(ctx.asignacion());
+        }
+        return null;
+    }
+
+    @Override
     public NodoAST visitDeclaracionVar(CodexParser.DeclaracionVarContext ctx) {
         String id = ctx.ID().getText();
         String tipo = ctx.tipoDato().getText();
@@ -84,6 +98,24 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
         }
 
         return new NodoAsignacion(id, indice, valor, linea, columna);
+    }
+
+    @Override
+    public NodoAST visitIncremento(CodexParser.IncrementoContext ctx) {
+        String id = ctx.ID().getText();
+
+        String operador = ctx.MAS_MAS() != null ? "+" : "-";
+
+        int linea = ctx.start.getLine();
+        int columna = ctx.start.getCharPositionInLine();
+
+        NodoIdentificador variableIzquierda = new NodoIdentificador(id, linea, columna);
+
+        NodoLiteral literalUno = new NodoLiteral(1, "numerus", linea, columna);
+
+        NodoOperacionBinaria operacion = new NodoOperacionBinaria(variableIzquierda, operador, literalUno, linea, columna);
+
+        return new NodoAsignacion(id, null, operacion, linea, columna);
     }
 
     // ARREGLOS Y ASIGNACIONES
@@ -380,18 +412,33 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
     public NodoAST visitCicloPer(CodexParser.CicloPerContext ctx) {
         ciclosAbiertos++;
         NodoDeclaracionVar inicializacion = (NodoDeclaracionVar) visit(ctx.declaracionVar());
-        NodoExpresion condicion = (NodoExpresion) visit(ctx.expresion());
+
+        NodoExpresion condicion = (NodoExpresion) visit(ctx.expresion(0));
+
         String idIterador = ctx.ID().getText();
-        String operacion = ctx.MAS_MAS() != null ? "++" : "--";
+
+        String operacion = "";
+        NodoExpresion valorAsignacion = null;
+
+        if (ctx.MAS_MAS() != null) {
+            operacion = "++";
+        } else if (ctx.MENOS_MENOS() != null) {
+            operacion = "--";
+        } else if (ctx.ASIGNACION() != null) {
+            operacion = "=";
+            valorAsignacion = (NodoExpresion) visit(ctx.expresion(1));
+        }
+
         int linea = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
-
         int capInstrucciones = ctx.instruccion().size();
-        NodoPer nodoPer = new NodoPer(inicializacion, condicion, idIterador, operacion, capInstrucciones, linea, columna);
+
+        NodoPer nodoPer = new NodoPer(inicializacion, condicion, idIterador, operacion, valorAsignacion, capInstrucciones, linea, columna);
 
         for (CodexParser.InstruccionContext instCtx : ctx.instruccion()) {
             nodoPer.agregarInstruccion((NodoInstruccion) visit(instCtx));
         }
+
         ciclosAbiertos--;
         return nodoPer;
     }

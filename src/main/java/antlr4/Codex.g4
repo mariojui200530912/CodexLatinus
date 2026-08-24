@@ -12,9 +12,10 @@ tipoDato : NUMERUS | TEXTUM | DECIMALIS | LITTERA | BOOL | ID ;
 
 declaracion : declaracionVar
             | declaracionArreglo
-            | definicionStruct ;
+            | definicionStruct
+            | asignacion;
 
-declaracionVar : ESTO ID DOS_PUNTOS tipoDato ( expresion )? PUNTO_COMA ;
+declaracionVar : ESTO ID DOS_PUNTOS tipoDato ( expresion )? PUNTO_COMA? ;
 
 declaracionArreglo : SERIES ID CORCHETE_IZQ ENTERO CORCHETE_DER DOS_PUNTOS tipoDato ( LLAVE_IZQ expresion (COMA expresion)* LLAVE_DER )? PUNTO_COMA ;
 
@@ -33,6 +34,7 @@ parametro : ESTO ID DOS_PUNTOS tipoDato ;
 
 instruccion : declaracionVar
             | asignacion
+            | incremento
             | estructuraControl
             | funcionEspecial
             | llamadaFuncion PUNTO_COMA
@@ -44,6 +46,8 @@ interrupcion : ( PERGE | INTERRUMPE ) PUNTO_COMA ;
 retorno : REDDERE expresion PUNTO_COMA ;
 
 asignacion : ID ( PUNTO ID | CORCHETE_IZQ expresion CORCHETE_DER )* ASIGNACION expresion PUNTO_COMA ;
+
+incremento : ID (MAS_MAS | MENOS_MENOS) PUNTO_COMA ;
 
 estructuraControl : condicionalSi
                   | cicloDum
@@ -58,7 +62,8 @@ cicloDum : DUM PAREN_IZQ expresion PAREN_DER LLAVE_IZQ instruccion* LLAVE_DER FI
 
 cicloFacere : FACERE LLAVE_IZQ instruccion* LLAVE_DER DUM PAREN_IZQ expresion PAREN_DER PUNTO_COMA ;
 
-cicloPer : PER PAREN_IZQ declaracionVar expresion PUNTO_COMA ID (MAS_MAS | MENOS_MENOS) PAREN_DER LLAVE_IZQ instruccion* LLAVE_DER ;
+cicloPer : PER PAREN_IZQ declaracionVar expresion PUNTO_COMA ID (MAS_MAS | MENOS_MENOS | ASIGNACION expresion) PAREN_DER LLAVE_IZQ instruccion* LLAVE_DER ;
+
 
 funcionEspecial : ID? LEER PUNTO_COMA?
                 | IMPRIMIR expresion (IMPRIMIR expresion)* PUNTO_COMA? ;

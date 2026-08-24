@@ -144,6 +144,13 @@ public class CodexBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitIncremento(CodexParser.IncrementoContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitEstructuraControl(CodexParser.EstructuraControlContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

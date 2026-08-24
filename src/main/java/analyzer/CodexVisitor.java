@@ -119,6 +119,12 @@ public interface CodexVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAsignacion(CodexParser.AsignacionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CodexParser#incremento}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIncremento(CodexParser.IncrementoContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CodexParser#estructuraControl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
