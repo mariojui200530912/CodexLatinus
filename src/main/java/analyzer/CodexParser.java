@@ -1,4 +1,4 @@
-// Generated from C:/Users/Hp/IntelliJProjects/CodexLatinus/src/main/java/Codex.g4 by ANTLR 4.13.2
+// Generated from C:/Users/Hp/IntelliJProjects/CodexLatinus/src/main/java/antlr4/Codex.g4 by ANTLR 4.13.2
 package analyzer;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;

@@ -75,12 +75,6 @@ public class NodoFuncion extends NodoInstruccion {
         if (this.tipoRetorno != null) {
             if (!tieneRetorno) {
                 gestorErrores.agregarError("Semántico", "La función 'ratio' (" + this.id + ") debe tener al menos una instrucción 'reddere' en su cuerpo.", this.linea, this.columna);
-            } else if (tipoRetornado != null && !this.tipoRetorno.equals(tipoRetornado) && !tipoRetornado.equals("error")) {
-                gestorErrores.agregarError("Semántico", "Tipo de retorno incorrecto en función '" + this.id + "'. Se esperaba '" + this.tipoRetorno + "' pero se intenta retornar '" + tipoRetornado + "'.", this.linea, this.columna);
-            }
-        } else {
-            if (tieneRetorno) {
-                gestorErrores.agregarError("Semántico", "La función 'actio' (" + this.id + ") no debe retornar ningún valor.", this.linea, this.columna);
             }
         }
     }
