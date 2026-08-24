@@ -11,7 +11,8 @@ public class NodoFacere extends NodoInstruccion {
     public NodoExpresion condicion;
     public int contador = 0;
 
-    public NodoFacere(int capacidad, NodoExpresion condicion) {
+    public NodoFacere(int capacidad, NodoExpresion condicion, int linea, int columna) {
+        super(linea, columna);
         this.instrucciones = new NodoInstruccion[capacidad];
         this.condicion = condicion;
     }

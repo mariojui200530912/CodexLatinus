@@ -12,7 +12,8 @@ public class NodoDefinicionStruct extends NodoInstruccion {
     public String[] tiposAtributos;
     public int cantAtributos = 0;
 
-    public NodoDefinicionStruct(String id, int capacidadAtributos) {
+    public NodoDefinicionStruct(String id, int capacidadAtributos, int linea, int columna) {
+        super(linea, columna);
         this.id = id;
         this.nombresAtributos = new String[capacidadAtributos];
         this.tiposAtributos = new String[capacidadAtributos];

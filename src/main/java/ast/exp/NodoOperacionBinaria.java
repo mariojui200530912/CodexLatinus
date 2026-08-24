@@ -9,7 +9,8 @@ public class NodoOperacionBinaria extends NodoExpresion {
     public String operador;
     public NodoExpresion hijoDerecho;
 
-    public NodoOperacionBinaria(NodoExpresion izq, String op, NodoExpresion der) {
+    public NodoOperacionBinaria(NodoExpresion izq, String op, NodoExpresion der, int linea, int columna) {
+        super(linea, columna);
         this.hijoIzquierdo = izq;
         this.operador = op;
         this.hijoDerecho = der;
@@ -19,7 +20,17 @@ public class NodoOperacionBinaria extends NodoExpresion {
     public void validarSemantica(TablaSimbolos entornoActual, GestorErrores gestorErrores) {
         hijoIzquierdo.validarSemantica(entornoActual, gestorErrores);
         hijoDerecho.validarSemantica(entornoActual, gestorErrores);
-
+        // validamos division/0 estatica
+        if (operador.equals("/")) {
+            if (hijoDerecho instanceof NodoLiteral) {
+                String valorDerecho = ((NodoLiteral) hijoDerecho).valor.toString();
+                if (valorDerecho.equals("0") || valorDerecho.equals("0.0")) {
+                    gestorErrores.agregarError("Semántico", "Error Matemático: División por cero detectada. [Línea: " + linea + "]", this.linea, this.columna);
+                    this.tipoInferido = "error";
+                    return; // Detenemos la validación aquí
+                }
+            }
+        }
         if (operador.equals("+") || operador.equals("-") || operador.equals("*") || operador.equals("/")) {
             this.tipoInferido = ValidadorTipos.inferirTipoAritmetico(hijoIzquierdo.tipoInferido, operador, hijoDerecho.tipoInferido, gestorErrores, this.linea, this.columna);
         } else if (operador.equals("&&") || operador.equals("||")) {

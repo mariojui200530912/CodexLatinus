@@ -11,7 +11,8 @@ public class NodoLlamadaFuncion extends NodoExpresion {
     public NodoExpresion[] argumentos;
     public int cantArgumentos = 0;
 
-    public NodoLlamadaFuncion(String id, int capacidadArgumentos) {
+    public NodoLlamadaFuncion(String id, int capacidadArgumentos, int linea, int columna) {
+        super(linea, columna);
         this.id = id;
         if (capacidadArgumentos > 0) {
             this.argumentos = new NodoExpresion[capacidadArgumentos];

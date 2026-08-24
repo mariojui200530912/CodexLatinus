@@ -15,7 +15,8 @@ public class NodoDeclaracionArreglo extends NodoInstruccion {
     public NodoExpresion[] valoresIniciales; // Arreglo simple para los valores {exp, exp...}
     public int cantValores = 0;
 
-    public NodoDeclaracionArreglo(String id, int tamano, String tipoDato, int capValores) {
+    public NodoDeclaracionArreglo(String id, int tamano, String tipoDato, int capValores, int linea, int columna) {
+        super(linea, columna);
         this.id = id;
         this.tamano = tamano;
         this.tipoDato = tipoDato;

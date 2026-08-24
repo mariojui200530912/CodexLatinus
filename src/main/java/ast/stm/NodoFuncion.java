@@ -14,7 +14,8 @@ public class NodoFuncion extends NodoInstruccion {
     public NodoInstruccion[] instrucciones;
     public int cantInstrucciones = 0;
 
-    public NodoFuncion(String id, String tipoRetorno, int capParams, int capInstrucciones) {
+    public NodoFuncion(String id, String tipoRetorno, int capParams, int capInstrucciones, int linea, int columna) {
+        super(linea, columna);
         this.id = id;
         this.tipoRetorno = tipoRetorno;
         this.nombresParametros = new String[capParams];

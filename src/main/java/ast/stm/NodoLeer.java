@@ -8,7 +8,8 @@ import traductor.TraductorPigLatin;
 public class NodoLeer extends NodoInstruccion {
     public String idDestino; // Puede ser null si solo es '<<' sin variable
 
-    public NodoLeer(String idDestino) {
+    public NodoLeer(String idDestino, int linea, int columna) {
+        super(linea, columna);
         this.idDestino = idDestino;
     }
 

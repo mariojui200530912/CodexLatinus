@@ -10,7 +10,8 @@ public class NodoAccesoArreglo extends NodoExpresion {
     public String idArreglo;
     public NodoExpresion expresionIndice;
 
-    public NodoAccesoArreglo(String idArreglo, NodoExpresion expresionIndice) {
+    public NodoAccesoArreglo(String idArreglo, NodoExpresion expresionIndice, int linea, int columna) {
+        super(linea, columna);
         this.idArreglo = idArreglo;
         this.expresionIndice = expresionIndice;
     }

@@ -8,7 +8,8 @@ import traductor.TraductorPigLatin;
 public class NodoLiteral extends NodoExpresion {
     public Object valor;
     public String tipoDato;
-    public NodoLiteral(Object valor, String tipoDato) {
+    public NodoLiteral(Object valor, String tipoDato, int linea, int columna) {
+        super(linea, columna);
         this.valor = valor;
         this.tipoDato = tipoDato;
     }

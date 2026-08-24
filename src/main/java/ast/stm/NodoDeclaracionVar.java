@@ -13,7 +13,8 @@ public class NodoDeclaracionVar extends NodoInstruccion {
     public String tipoDato;
     public NodoExpresion expresionValor; // Null si no se inicializa
 
-    public NodoDeclaracionVar(String id, String tipoDato, NodoExpresion expresionValor) {
+    public NodoDeclaracionVar(String id, String tipoDato, NodoExpresion expresionValor, int linea, int columna) {
+        super(linea, columna);
         this.id = id;
         this.tipoDato = tipoDato;
         this.expresionValor = expresionValor;

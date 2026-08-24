@@ -8,7 +8,8 @@ import traductor.TraductorPigLatin;
 public class NodoInterrupcion extends NodoInstruccion {
     public String tipo; // "perge" o "interrumpe"
 
-    public NodoInterrupcion(String tipo) {
+    public NodoInterrupcion(String tipo, int linea, int columna) {
+        super(linea, columna);
         this.tipo = tipo;
     }
 

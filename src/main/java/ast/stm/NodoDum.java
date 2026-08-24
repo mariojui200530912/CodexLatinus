@@ -11,7 +11,8 @@ public class NodoDum extends NodoInstruccion {
     public NodoInstruccion[] instrucciones;
     public int contador = 0;
 
-    public NodoDum(NodoExpresion condicion, int capacidad) {
+    public NodoDum(NodoExpresion condicion, int capacidad, int linea, int columna) {
+        super(linea, columna);
         this.condicion = condicion;
         this.instrucciones = new NodoInstruccion[capacidad];
     }

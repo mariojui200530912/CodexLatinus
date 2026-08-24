@@ -13,7 +13,8 @@ public class NodoAsignacion extends NodoInstruccion {
     public NodoExpresion expresionIndice; // Null si es variable simple, instanciado si es arreglo
     public NodoExpresion expresionValor;
 
-    public NodoAsignacion(String id, NodoExpresion expresionIndice, NodoExpresion expresionValor) {
+    public NodoAsignacion(String id, NodoExpresion expresionIndice, NodoExpresion expresionValor, int linea, int columna) {
+        super(linea, columna);
         this.id = id;
         this.expresionIndice = expresionIndice;
         this.expresionValor = expresionValor;
@@ -23,7 +24,7 @@ public class NodoAsignacion extends NodoInstruccion {
     public void validarSemantica(TablaSimbolos entornoActual, GestorErrores gestorErrores) {
         Simbolo var = entornoActual.buscar(this.id);
         if (var == null) {
-            System.err.println("Error: Intentando asignar a variable no declarada '" + this.id + "'.");
+            gestorErrores.agregarError("Semantico", "Error Semántico: Intentando asignar a variable no declarada '" + this.id + "'. [Línea: " + linea + "]", this.linea, this.columna);
             return;
         }
 

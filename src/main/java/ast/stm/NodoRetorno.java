@@ -10,7 +10,8 @@ import traductor.TraductorPigLatin;
 public class NodoRetorno extends NodoInstruccion {
     public NodoExpresion expresionRetorno;
 
-    public NodoRetorno(NodoExpresion expresionRetorno) {
+    public NodoRetorno(NodoExpresion expresionRetorno, int linea, int columna) {
+        super(linea, columna);
         this.expresionRetorno = expresionRetorno;
     }
 

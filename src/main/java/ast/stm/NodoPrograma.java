@@ -16,7 +16,8 @@ public class NodoPrograma extends NodoAST {
 
     public TablaSimbolos tablaGlobalGenerada;
 
-    public NodoPrograma(int capGlobales, int capFunciones, int capPrincipal) {
+    public NodoPrograma(int capGlobales, int capFunciones, int capPrincipal, int linea, int columna) {
+        super(linea, columna);
         this.variablesGlobales = new NodoInstruccion[capGlobales];
         this.funciones = new NodoInstruccion[capFunciones];
         this.instruccionesPrincipal = new NodoInstruccion[capPrincipal];

@@ -9,7 +9,8 @@ public class NodoImprimir extends NodoInstruccion {
     public NodoExpresion[] expresiones;
     public int contador = 0;
 
-    public NodoImprimir(int capacidad) {
+    public NodoImprimir(int capacidad, int linea, int columna) {
+        super(linea, columna);
         this.expresiones = new NodoExpresion[capacidad];
     }
 

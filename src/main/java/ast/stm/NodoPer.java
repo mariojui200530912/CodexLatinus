@@ -14,7 +14,8 @@ public class NodoPer extends NodoInstruccion {
     public NodoInstruccion[] instrucciones;
     public int contador = 0;
 
-    public NodoPer(NodoDeclaracionVar init, NodoExpresion cond, String id, String opIt, int capacidad) {
+    public NodoPer(NodoDeclaracionVar init, NodoExpresion cond, String id, String opIt, int capacidad, int linea, int columna) {
+        super(linea, columna);
         this.inicializacion = init;
         this.condicion = cond;
         this.idIterador = id;

@@ -9,7 +9,8 @@ import traductor.TraductorPigLatin;
 public class NodoIdentificador extends NodoExpresion {
     public String id;
 
-    public NodoIdentificador(String id) {
+    public NodoIdentificador(String id, int linea, int columna) {
+        super(linea, columna);
         this.id = id;
     }
 

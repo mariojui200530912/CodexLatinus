@@ -9,7 +9,8 @@ public class NodoOperacionUnaria extends NodoExpresion {
     public String operador;
     public NodoExpresion expresion;
 
-    public NodoOperacionUnaria(String operador, NodoExpresion expresion) {
+    public NodoOperacionUnaria(String operador, NodoExpresion expresion,  int linea, int columna) {
+        super(linea, columna);
         this.operador = operador;
         this.expresion = expresion;
     }

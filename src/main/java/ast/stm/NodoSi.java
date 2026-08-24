@@ -13,7 +13,8 @@ public class NodoSi extends NodoInstruccion {
     public int cantVerdadero = 0;
     public int cantFalso = 0;
 
-    public NodoSi(NodoExpresion condicion, int capVerdadero, int capFalso) {
+    public NodoSi(NodoExpresion condicion, int capVerdadero, int capFalso, int linea, int columna) {
+        super(linea, columna);
         this.condicion = condicion;
         this.instruccionesVerdadero = new NodoInstruccion[capVerdadero];
         if (capFalso > 0) this.instruccionesFalso = new NodoInstruccion[capFalso];

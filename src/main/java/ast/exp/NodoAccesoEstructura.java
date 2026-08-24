@@ -10,7 +10,8 @@ public class NodoAccesoEstructura extends NodoExpresion {
     public String idEstructura;
     public String idAtributo;
 
-    public NodoAccesoEstructura(String idEstructura, String idAtributo) {
+    public NodoAccesoEstructura(String idEstructura, String idAtributo, int linea, int columna) {
+        super(linea, columna);
         this.idEstructura = idEstructura;
         this.idAtributo = idAtributo;
     }

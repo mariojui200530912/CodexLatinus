@@ -13,7 +13,8 @@ public class NodoInstanciaEstructura extends NodoExpresion {
     public NodoExpresion[] expresionesAtributos;
     public int cantAtributos = 0;
 
-    public NodoInstanciaEstructura(String tipoEstructura, int capacidadAtributos) {
+    public NodoInstanciaEstructura(String tipoEstructura, int capacidadAtributos, int linea, int columna) {
+        super(linea, columna);
         this.tipoEstructura = tipoEstructura;
         this.nombresAtributos = new String[capacidadAtributos];
         this.expresionesAtributos = new NodoExpresion[capacidadAtributos];
