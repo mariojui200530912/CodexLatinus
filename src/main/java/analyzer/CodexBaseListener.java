@@ -113,6 +113,18 @@ public class CodexBaseListener implements CodexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAtributoStruct(CodexParser.AtributoStructContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAtributoStruct(CodexParser.AtributoStructContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDefinicionStruct(CodexParser.DefinicionStructContext ctx) { }
 	/**
 	 * {@inheritDoc}

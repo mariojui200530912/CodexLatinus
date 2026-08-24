@@ -34,6 +34,7 @@ public class NodoDeclaracionArreglo extends NodoInstruccion {
     @Override
     public void validarSemantica(TablaSimbolos entornoActual, GestorErrores gestorErrores) {
         Simbolo nuevoArr = new Simbolo(this.id, this.tipoDato, "Arreglo", this.linea, this.columna);
+        nuevoArr.capacidad = this.tamano;
         boolean insertado = entornoActual.insertar(nuevoArr);
 
         if (!insertado) {

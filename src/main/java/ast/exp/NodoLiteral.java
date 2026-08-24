@@ -33,4 +33,16 @@ public class NodoLiteral extends NodoExpresion {
         return valor.toString();
     }
 
+    @Override
+    public Integer evaluarEstaticamente() {
+        if (this.tipoInferido.equals("numerus")) {
+            try {
+                return Integer.parseInt(this.valor.toString());
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
 }

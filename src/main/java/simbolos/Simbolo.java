@@ -14,6 +14,8 @@ public class Simbolo {
     public String[] tiposParametros;
     public int cantParametros;
 
+    public int capacidad = 0;
+
     public Simbolo(String id, String tipo, String categoria, int linea, int columna) {
         this.id = id;
         this.tipo = tipo;

@@ -52,6 +52,12 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
 
         if (ctx.expresion() != null) {
             valor = visit(ctx.expresion()); // Visitamos la expresion para obtener su sub-arbol
+            if (valor instanceof NodoInstanciaEstructura) {
+                NodoInstanciaEstructura instancia = (NodoInstanciaEstructura) valor;
+                if (instancia.tipoEstructura == null || instancia.tipoEstructura.isEmpty()) {
+                    instancia.tipoEstructura = tipo;
+                }
+            }
         }
 
         return new NodoDeclaracionVar(id, tipo, (NodoExpresion) valor, linea, columna);
@@ -59,20 +65,24 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
 
     @Override
     public NodoAST visitAsignacion(CodexParser.AsignacionContext ctx) {
-        String id = ctx.ID().getText();
-        NodoAST indice = null;
+        String id = ctx.ID(0).getText();
 
         int linea = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
 
+        NodoExpresion valor = (NodoExpresion) visit(ctx.expresion(ctx.expresion().size() - 1));
+
+        NodoExpresion indice = null;
         if (ctx.expresion().size() > 1) {
-            indice = visit(ctx.expresion(0));
-            NodoAST valor = visit(ctx.expresion(1));
-            return new NodoAsignacion(id, (NodoExpresion) indice, (NodoExpresion) valor, linea, columna);
-        } else {
-            NodoAST valor = visit(ctx.expresion(0));
-            return new NodoAsignacion(id, (NodoExpresion) null, (NodoExpresion) valor, linea, columna);
+            indice = (NodoExpresion) visit(ctx.expresion(0));
         }
+
+        if (ctx.ID().size() > 1) {
+            String idAtributo = ctx.ID(1).getText();
+            id = id + "." + idAtributo;
+        }
+
+        return new NodoAsignacion(id, indice, valor, linea, columna);
     }
 
     // ARREGLOS Y ASIGNACIONES
@@ -97,16 +107,16 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
 
     @Override
     public NodoAST visitDefinicionStruct(CodexParser.DefinicionStructContext ctx) {
-        String id = ctx.ID(0).getText(); // El primer ID es el nombre de la estructura
-        int capAtributos = ctx.tipoDato().size();
+        String id = ctx.ID().getText();
+        int capAtributos = ctx.atributoStruct().size();
         int linea = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
 
         NodoDefinicionStruct nodoStruct = new NodoDefinicionStruct(id, capAtributos, linea, columna);
 
-        for (int i = 0; i < capAtributos; i++) {
-            String nombreAtributo = ctx.ID(i + 1).getText();
-            String tipoAtributo = ctx.tipoDato(i).getText();
+        for (CodexParser.AtributoStructContext attrCtx : ctx.atributoStruct()) {
+            String nombreAtributo = attrCtx.ID().getText();
+            String tipoAtributo = attrCtx.tipoDato().getText();
             nodoStruct.agregarAtributo(nombreAtributo, tipoAtributo);
         }
 
@@ -207,9 +217,6 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
             nodoInstancia.agregarAtributo(nombreAtributo, valorAtributo);
         }
 
-        nodoInstancia.linea = ctx.getStart().getLine();
-        nodoInstancia.columna = ctx.getStart().getCharPositionInLine();
-
         return nodoInstancia;
     }
 
@@ -304,18 +311,51 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
 
     @Override
     public NodoAST visitCondicionalSi(CodexParser.CondicionalSiContext ctx) {
-        NodoExpresion condicion = (NodoExpresion) visit(ctx.expresion(0));
-
-        int capVerdadero = ctx.instruccion().size();
-        int capFalso = 0;
         int linea = ctx.start.getLine();
         int columna = ctx.start.getCharPositionInLine();
-        NodoSi nodoSi = new NodoSi(condicion, capVerdadero, capFalso, linea, columna);
-        for (CodexParser.InstruccionContext instCtx : ctx.instruccion()) {
-            nodoSi.agregarInstruccionVerdadera((NodoInstruccion) visit(instCtx));
+
+        int totalInst = ctx.instruccion().size();
+
+        NodoSi nodoRaiz = null;
+        NodoSi nodoActual = null;
+
+        int condicionIndex = 0;
+        boolean llenandoVerdaderas = true;
+
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            org.antlr.v4.runtime.tree.ParseTree child = ctx.getChild(i);
+            String texto = child.getText();
+
+            if (texto.equals("si")) {
+                NodoExpresion condicion = (NodoExpresion) visit(ctx.expresion(condicionIndex++));
+                nodoRaiz = new NodoSi(condicion, totalInst, totalInst, linea, columna);
+                nodoActual = nodoRaiz;
+                llenandoVerdaderas = true;
+            }
+            else if (texto.equals("aliter")) {
+                if (i + 1 < ctx.getChildCount() && ctx.getChild(i + 1).getText().equals("(")) {
+                    NodoExpresion condicion = (NodoExpresion) visit(ctx.expresion(condicionIndex++));
+                    NodoSi nuevoSi = new NodoSi(condicion, totalInst, totalInst, linea, columna);
+
+                    nodoActual.agregarInstruccionFalsa(nuevoSi);
+                    nodoActual = nuevoSi;
+                    llenandoVerdaderas = true;
+                } else if (i + 1 < ctx.getChildCount() && ctx.getChild(i + 1).getText().equals("{")) {
+                    llenandoVerdaderas = false;
+                }
+            }
+            else if (child instanceof CodexParser.InstruccionContext) {
+
+                NodoInstruccion instruccion = (NodoInstruccion) visit(child);
+                if (llenandoVerdaderas) {
+                    nodoActual.agregarInstruccionVerdadera(instruccion);
+                } else {
+                    nodoActual.agregarInstruccionFalsa(instruccion);
+                }
+            }
         }
 
-        return nodoSi;
+        return nodoRaiz;
     }
 
     @Override
@@ -359,8 +399,6 @@ public class ConstructorAST extends CodexBaseVisitor<NodoAST> {
         int columna = ctx.start.getCharPositionInLine();
 
         NodoInterrupcion nodo = new NodoInterrupcion(tipo, linea, columna);
-        nodo.linea = ctx.getStart().getLine();
-        nodo.columna = ctx.getStart().getCharPositionInLine();
 
         return nodo;
     }

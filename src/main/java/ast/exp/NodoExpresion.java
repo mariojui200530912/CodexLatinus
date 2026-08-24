@@ -13,4 +13,8 @@ public abstract class NodoExpresion extends NodoAST {
 
     @Override
     public abstract void validarSemantica(TablaSimbolos entornoActual, GestorErrores gestorErrores);
+
+    public Integer evaluarEstaticamente(){
+        return null;
+    }
 }

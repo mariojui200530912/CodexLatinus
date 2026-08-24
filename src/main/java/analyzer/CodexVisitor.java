@@ -59,6 +59,12 @@ public interface CodexVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDeclaracionArreglo(CodexParser.DeclaracionArregloContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CodexParser#atributoStruct}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAtributoStruct(CodexParser.AtributoStructContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CodexParser#definicionStruct}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

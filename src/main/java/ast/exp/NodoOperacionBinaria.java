@@ -49,4 +49,22 @@ public class NodoOperacionBinaria extends NodoExpresion {
     public String traducirPigLatin() {
         return hijoIzquierdo.traducirPigLatin() + " " + operador + " " + hijoDerecho.traducirPigLatin();
     }
+
+    @Override
+    public Integer evaluarEstaticamente() {
+        Integer valorIzq = hijoIzquierdo.evaluarEstaticamente();
+        Integer valorDer = hijoDerecho.evaluarEstaticamente();
+
+        if (valorIzq != null && valorDer != null) {
+            switch (this.operador) {
+                case "+": return valorIzq + valorDer;
+                case "-": return valorIzq - valorDer;
+                case "*": return valorIzq * valorDer;
+                case "/":
+                    if (valorDer != 0) return valorIzq / valorDer;
+                    return null;    
+            }
+        }
+        return null;
+    }
 }

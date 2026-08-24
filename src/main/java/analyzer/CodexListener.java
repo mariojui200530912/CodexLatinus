@@ -88,6 +88,16 @@ public interface CodexListener extends ParseTreeListener {
 	 */
 	void exitDeclaracionArreglo(CodexParser.DeclaracionArregloContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CodexParser#atributoStruct}.
+	 * @param ctx the parse tree
+	 */
+	void enterAtributoStruct(CodexParser.AtributoStructContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CodexParser#atributoStruct}.
+	 * @param ctx the parse tree
+	 */
+	void exitAtributoStruct(CodexParser.AtributoStructContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CodexParser#definicionStruct}.
 	 * @param ctx the parse tree
 	 */
